@@ -67,17 +67,11 @@ constructor TEnigmaMachineM3.Create;
 begin
   inherited;
   Model := 'M3 Army';
-  Rotor[1] := TEnigmaRotor.Create(CEnigmaRotorWiringRI, 1);
-  Rotor[1].RingOffset := 13;
-  Rotor[1].RotorNotchPositions := [17];
-  Rotor[2] := TEnigmaRotor.Create(CEnigmaRotorWiringRII, 2);
-  Rotor[2].RingOffset := 3;
-  Rotor[2].RotorNotchPositions := [5];
-  Rotor[3] := TEnigmaRotor.Create(CEnigmaRotorWiringRIII, 3);
-  Rotor[3].RingOffset := 0;
-  Rotor[3].RotorNotchPositions := [21];
-  Reflector := TEnigmaReflector.Create(CEnigmaReflectorWiringRB);
-  PlugBoard := TEnigmaPlugBoard.Create('');
+  AddRotor(CEnigmaRotorWiringRI, 1, 1, 13, [17]);
+  AddRotor(CEnigmaRotorWiringRII, 2, 2, 3, [5]);
+  AddRotor(CEnigmaRotorWiringRIII, 3, 3, 0, [7,21]);
+  Reflector.Configure(CEnigmaReflectorWiringRB);
+  PlugBoard.Configure(CEnigmaRotorWiringFlat);
 end;
 
 procedure TEnigmaDemoForm.BitBtn1Click(Sender : TObject);
