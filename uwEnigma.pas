@@ -42,7 +42,7 @@ type
     class operator Initialize(out Dest: TEnigmaCipherWiringCircuit);
   end;
 
-  // base enigma chiper
+  // base enigma chiper class
   TEnigmaCipher = class
   strict private
     fCipherWiringCircuit: TEnigmaCipherWiringCircuit;
