@@ -235,9 +235,9 @@ begin
         if (SignalDirection = sdIn) and (fRingOffset <> 0) then
         begin
           lCharIndex := lCharIndex + (fRingOffset);
-          if lCharIndex > High(TEnigmaRingOffset) then
+          if lCharIndex > high(TEnigmaRingOffset) then
           begin
-            lCharIndex := lCharIndex - High(TEnigmaRingOffset);
+            lCharIndex := lCharIndex - high(TEnigmaRingOffset);
           end;
         end;
       end;
@@ -248,7 +248,7 @@ begin
           lCharIndex := lCharIndex - (fRingOffset);
           if lCharIndex < 1 then
           begin
-            lCharIndex := High(TEnigmaRingOffset) + lCharIndex;
+            lCharIndex := high(TEnigmaRingOffset) + lCharIndex;
           end;
         end;
       end;
@@ -298,9 +298,9 @@ begin
     sdIn :
       begin
         lCharIndex := lCharIndex + fRotorCurrentPosition;
-        if lCharIndex > High(TEnigmaRotorPosition) then
+        if lCharIndex > high(TEnigmaRotorPosition) then
         begin
-          lCharIndex := lCharIndex - High(TEnigmaRotorPosition);
+          lCharIndex := lCharIndex - high(TEnigmaRotorPosition);
         end;
       end;
     sdOut :
@@ -308,7 +308,7 @@ begin
         lCharIndex := lCharIndex - fRotorCurrentPosition;
         if lCharIndex < 1 then
         begin
-          lCharIndex := High(TEnigmaRotorPosition) + lCharIndex;
+          lCharIndex := high(TEnigmaRotorPosition) + lCharIndex;
         end;
       end;
   end;
@@ -318,7 +318,7 @@ end;
 
 procedure TEnigmaRotor.IncRotorCurrentPosition;
 begin
-  if fRotorCurrentPosition < High(TEnigmaRotorPosition) then
+  if fRotorCurrentPosition < high(TEnigmaRotorPosition) then
   begin
     fRotorCurrentPosition := fRotorCurrentPosition + 1;
   end
@@ -375,12 +375,30 @@ end;
 
 destructor TEnigmaMachine.Destroy;
 begin
-  fRotorSet[1].Free;
-  fRotorSet[2].Free;
-  fRotorSet[3].Free;
-  fRotorSet[4].Free;
-  fRotorSet[5].Free;
-  fReflector.Free;
+  if fRotorSet[1] <> nil then
+  begin
+    fRotorSet[1].Free;
+  end;
+  if fRotorSet[2] <> nil then
+  begin
+    fRotorSet[2].Free;
+  end;
+  if fRotorSet[3] <> nil then
+  begin
+    fRotorSet[3].Free;
+  end;
+  if fRotorSet[4] <> nil then
+  begin
+    fRotorSet[4].Free;
+  end;
+  if fRotorSet[5] <> nil then
+  begin
+    fRotorSet[5].Free;
+  end;
+  if fReflector <> nil then
+  begin
+    fReflector.Free;
+  end;
   fPlugBoard.Free;
   inherited;
 end;
@@ -396,7 +414,7 @@ begin
     lRotor.IncRotorCurrentPosition;
     if lRotor.RotorCurrentPosition in lRotor.RotorNotchPositions then
     begin
-      if lRotor.RotorSlot < High(TEnigmaRotorSlots) then
+      if lRotor.RotorSlot < high(TEnigmaRotorSlots) then
       begin
         CheckNotchPosition(aRotorSlot + 1);
       end;
