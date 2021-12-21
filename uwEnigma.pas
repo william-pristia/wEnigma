@@ -50,7 +50,7 @@ type
     procedure SetWiring(const aRightSideConfiguration: TEnigmaOutVirtualKeyBoard);
   public
     constructor Create(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard); overload; virtual;
-    function SignalSwitch(const aChar: AnsiChar; const SignalDirection: TEnigmaSignalDirection = sdIn): AnsiChar; virtual;
+    function SignalSwitch(const aChar: AnsiChar; const SignalDirection: TEnigmaSignalDirection = sdIn): AnsiChar; dynamic;
     property CipherWiringCircuit: TEnigmaCipherWiringCircuit read fCipherWiringCircuit;
   end;
 
