@@ -111,8 +111,8 @@ type
     fReflector: TEnigmaReflector;
     fRotorSet: TEnigmaRotors;
     fModel: string;
-    function GetRotor(Index: Integer): TEnigmaRotor;
-    procedure SetRotor(Index: Integer; const Value: TEnigmaRotor);
+    function GetRotor(aRotorIndex: Integer): TEnigmaRotor;
+    procedure SetRotor(aRotorIndex: Integer; const Value: TEnigmaRotor);
   protected
     procedure CheckNotchPosition(const aRotorSlot: TEnigmaRotorSlots); virtual;
   public
@@ -136,7 +136,7 @@ type
     property PlugBoard: TEnigmaPlugBoard read fPlugBoard write fPlugBoard;
     property Reflector: TEnigmaReflector read fReflector write fReflector;
     property RotorSet: TEnigmaRotors read fRotorSet write fRotorSet;
-    property Rotor[index: Integer]: TEnigmaRotor read GetRotor write SetRotor;
+    property Rotor[aRotorIndex: Integer]: TEnigmaRotor read GetRotor write SetRotor;
   end;
 
 implementation
@@ -425,12 +425,12 @@ end;
 
 procedure TEnigmaMachine.CheckNotchPosition(const aRotorSlot: TEnigmaRotorSlots);
 var
-  lCurrentID: Integer;
+  lRotorIndex: Integer;
   lRotor: TEnigmaRotor;
 begin
-  if RotorIndexFromRotorSlot(aRotorSlot, lCurrentID) then
+  if RotorIndexFromRotorSlot(aRotorSlot, lRotorIndex) then
   begin
-    lRotor := fRotorSet[lCurrentID];
+    lRotor := fRotorSet[lRotorIndex];
     lRotor.IncRotorCurrentPosition;
     if lRotor.RotorCurrentPosition in lRotor.RotorNotchPositions then
     begin
@@ -445,7 +445,7 @@ end;
 function TEnigmaMachine.GetCiphedChar(aChar: AnsiChar): AnsiChar;
 var
   lSlot: TEnigmaRotorSlots;
-  lCurrentID: Integer;
+  lRotorIndex: Integer;
   C: AnsiChar;
 begin
   CheckNotchPosition(1);
@@ -455,9 +455,9 @@ begin
   for lSlot := 1 to CEnigmaRotorsSet do
   begin
     // RightLeft Signal Direction
-    if RotorIndexFromRotorSlot(lSlot, lCurrentID) then
+    if RotorIndexFromRotorSlot(lSlot, lRotorIndex) then
     begin
-      C := fRotorSet[lCurrentID].SignalSwitch(C, sdIn);
+      C := fRotorSet[lRotorIndex].SignalSwitch(C, sdIn);
     end;
   end;
   // Reflector switching
@@ -465,9 +465,9 @@ begin
   for lSlot := CEnigmaRotorsSet downto 1 do
   begin
     // LeftToRight Signal Direction
-    if RotorIndexFromRotorSlot(lSlot, lCurrentID) then
+    if RotorIndexFromRotorSlot(lSlot, lRotorIndex) then
     begin
-      C := fRotorSet[lCurrentID].SignalSwitch(C, sdOut);
+      C := fRotorSet[lRotorIndex].SignalSwitch(C, sdOut);
     end;
   end;
   // Plugboard out switching
@@ -476,24 +476,24 @@ begin
   // Rollup Rotors
 end;
 
-function TEnigmaMachine.GetRotor(Index: Integer): TEnigmaRotor;
+function TEnigmaMachine.GetRotor(aRotorIndex: Integer): TEnigmaRotor;
 begin
-  Result := fRotorSet[index];
+  Result := fRotorSet[aRotorIndex];
 end;
 
 function TEnigmaMachine.RotorIndexFromRotorID(aRotorID: TEnigmaRotorIDs; var aRotorIndex: Integer): Boolean;
 var
-  lCurrentID: Integer;
+  lRotorIndex: Integer;
 begin
   Result := False;
   aRotorIndex := -1;
-  for lCurrentID := 0 to Pred(fRotorSet.Count) do
+  for lRotorIndex := 0 to Pred(fRotorSet.Count) do
   begin
-    if fRotorSet[lCurrentID] <> nil then
+    if fRotorSet[lRotorIndex] <> nil then
     begin
-      if fRotorSet[lCurrentID].RotorID = aRotorID then
+      if fRotorSet[lRotorIndex].RotorID = aRotorID then
       begin
-        aRotorIndex := lCurrentID;
+        aRotorIndex := lRotorIndex;
         Result := True;
         Break;
       end;
@@ -503,17 +503,17 @@ end;
 
 function TEnigmaMachine.RotorIndexFromRotorSlot(aSlot: TEnigmaRotorSlots; var aRotorIndex: Integer): Boolean;
 var
-  lCurrentID: Integer;
+  lRotorIndex: Integer;
 begin
   Result := False;
   aRotorIndex := -1;
-  for lCurrentID := 0 to Pred(fRotorSet.Count) do
+  for lRotorIndex := 0 to Pred(fRotorSet.Count) do
   begin
-    if fRotorSet[lCurrentID] <> nil then
+    if fRotorSet[lRotorIndex] <> nil then
     begin
-      if fRotorSet[lCurrentID].RotorSlot = aSlot then
+      if fRotorSet[lRotorIndex].RotorSlot = aSlot then
       begin
-        aRotorIndex := lCurrentID;
+        aRotorIndex := lRotorIndex;
         Result := True;
         Break;
       end;
@@ -521,9 +521,9 @@ begin
   end;
 end;
 
-procedure TEnigmaMachine.SetRotor(Index: Integer; const Value: TEnigmaRotor);
+procedure TEnigmaMachine.SetRotor(aRotorIndex: Integer; const Value: TEnigmaRotor);
 begin
-  fRotorSet[index] := Value;
+  fRotorSet[aRotorIndex] := Value;
 end;
 
 end.
