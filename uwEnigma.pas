@@ -14,6 +14,7 @@ const
   CEnigmaChars = 26;
   CEnigmaKeyboard = AnsiString('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
   CEnigmaRotorWiringFlat = CEnigmaKeyboard;
+  CHumanizedCipherWiringCircuit = CEnigmaChars * 3;
 
 const
   CEnigmaMaxRotors = 5;
@@ -30,6 +31,7 @@ type
   TEnigmaRotorNotchPositions = set of TEnigmaRotorNotchPosition;
 
   TEnigmaKeyBoard = string[CEnigmaChars];
+  THumanizedCipherWiringCircuit = string[CHumanizedCipherWiringCircuit];
 
   TEnigmaInPhysicalKeyBoard = TEnigmaKeyBoard;
   TEnigmaOutVirtualKeyBoard = TEnigmaKeyBoard;
@@ -54,6 +56,7 @@ type
     fCipherWiringCircuit : TEnigmaCipherWiringCircuit;
     fSignalSwitchEventTrigger : Boolean;
     fOnSignalSwitch : TEnigmaSignalSwitchEvent;
+    function GetHumanizedCipherWiringCircuit : THumanizedCipherWiringCircuit;
   protected
     procedure SetWiring(const aRightSideConfiguration : TEnigmaOutVirtualKeyBoard);
     procedure DoSignalSwitch(const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar); virtual;
@@ -62,6 +65,7 @@ type
     function SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection = sdIn) : AnsiChar; dynamic;
     property SignalSwitchEventTrigger : Boolean read fSignalSwitchEventTrigger write fSignalSwitchEventTrigger;
     property CipherWiringCircuit : TEnigmaCipherWiringCircuit read fCipherWiringCircuit;
+    property HumanizedCipherWiringCircuit : THumanizedCipherWiringCircuit read GetHumanizedCipherWiringCircuit;
     property OnSignalSwitch : TEnigmaSignalSwitchEvent read fOnSignalSwitch write fOnSignalSwitch;
   end;
 
@@ -181,7 +185,7 @@ end;
 
 constructor TEnigmaCipher.Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard);
 begin
-  fSignalSwitchEventTrigger:=True;
+  fSignalSwitchEventTrigger := True;
   SetWiring(aCipherRingWiring);
 end;
 
@@ -192,6 +196,25 @@ begin
     if Assigned(fOnSignalSwitch) then
     begin
       fOnSignalSwitch(Self, SignalDirection, aInChar, aOutChar);
+    end;
+  end;
+end;
+
+function TEnigmaCipher.GetHumanizedCipherWiringCircuit : THumanizedCipherWiringCircuit;
+begin
+  Result := '';
+  for var I := 1 to high(TEnigmaKeyBoard) do
+  begin
+    if fCipherWiringCircuit.LeftSide[I] <> fCipherWiringCircuit.RightSide[I] then
+    begin
+      if Result = '' then
+      begin
+        Result := Format('%S-%S', [fCipherWiringCircuit.LeftSide[I], fCipherWiringCircuit.RightSide[I]]);
+      end
+      else
+      begin
+        Result := Result + Format(', %S-%S', [fCipherWiringCircuit.LeftSide[I], fCipherWiringCircuit.RightSide[I]]);
+      end;
     end;
   end;
 end;
@@ -309,14 +332,14 @@ begin
   if SignalSwitchEventTrigger then
   begin
     lCanChangeSwitchTrigger := True;
-    SignalSwitchEventTrigger:=False;
+    SignalSwitchEventTrigger := False;
   end;
   lChar := FixWiringOffset(aChar, SignalDirection);
   lChar := inherited SignalSwitch(lChar, SignalDirection);
   lChar := FixWiringOffset(lChar, SignalDirection);
   if lCanChangeSwitchTrigger then
   begin
-    SignalSwitchEventTrigger:=True;
+    SignalSwitchEventTrigger := True;
   end;
   DoSignalSwitch(SignalDirection, aChar, lChar);
   Result := lChar;
@@ -404,7 +427,7 @@ begin
   if SignalSwitchEventTrigger then
   begin
     lCanChangeSwitchTrigger := True;
-    SignalSwitchEventTrigger:=False;
+    SignalSwitchEventTrigger := False;
   end;
   lChar := UpCase(aChar);
   lChar := FixRotorOffset(lChar, SignalDirection);
@@ -412,7 +435,7 @@ begin
   lChar := FixRotorOffset(lChar, SignalDirection);
   if lCanChangeSwitchTrigger then
   begin
-    SignalSwitchEventTrigger:=True;
+    SignalSwitchEventTrigger := True;
   end;
   DoSignalSwitch(SignalDirection, aChar, lChar);
   Result := lChar;

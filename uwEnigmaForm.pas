@@ -21,8 +21,8 @@ type
 
   TEnigmaDemoForm = class(TForm)
     btn_start : TBitBtn;
-    edt_InText: TEdit;
-    edt_OutText: TEdit;
+    edt_InText : TEdit;
+    edt_OutText : TEdit;
     btn_reset : TBitBtn;
     pnl_Slot_3 : TPanel;
     pnl_Slot_2 : TPanel;
@@ -42,7 +42,7 @@ type
     pnl_slot_2_out_out : TPanel;
     pnl_slot_1_out_in : TPanel;
     pnl_slot_1_out_out : TPanel;
-    Panel1 : TPanel;
+    pnl_PlugBoard : TPanel;
     pnl_Pluboard_in_in : TPanel;
     pnl_Pluboard_in_out : TPanel;
     pnl_Pluboard_out_in : TPanel;
@@ -101,6 +101,7 @@ type
     procedure OnRotorSwitch(Sender : TEnigmaCipher; const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar);
     procedure OnReflectorSwitch(Sender : TEnigmaCipher; const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar);
     procedure OnChipedChar(Sender : TEnigmaMachine; const aInChar, aOutChar : AnsiChar);
+    procedure ResetGUI;
   public
     A : TEnigmaMachine;
   end;
@@ -148,14 +149,14 @@ end;
 procedure TEnigmaDemoForm.btn_startClick(Sender : TObject);
 begin
   fActive := True;
-  edt_InText.Enabled:=False;
+  edt_InText.Enabled := False;
   pnl_Info.Caption := 'Typing enabled, press any ALPHA key to get chiped result';
 end;
 
 procedure TEnigmaDemoForm.btn_resetClick(Sender : TObject);
 begin
   fActive := False;
-  edt_InText.Enabled:=True;
+  edt_InText.Enabled := True;
   pnl_Info.Caption := 'Typing disabled';
   edt_InText.Text := '';
   edt_OutText.Text := '';
@@ -163,29 +164,7 @@ begin
   A.ConfigureSlot(2, 2, 1);
   A.ConfigureSlot(3, 3, 1);
   A.ConfigurePlugBoard('XBCDEFIHGJKSMNOPQRLTUVWAYZ');
-  pnl_slot_1.Caption := string(AnsiChar(64 + A.RotorSet[0].RotorCurrentPosition));
-  pnl_Slot_2.Caption := string(AnsiChar(64 + A.RotorSet[1].RotorCurrentPosition));
-  pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));
-  pnl_Pluboard_in_in.Caption := '';
-  pnl_Pluboard_in_out.Caption := '';
-  pnl_Pluboard_out_in.Caption := '';
-  pnl_Pluboard_out_out.Caption := '';
-  pnl_slot_1_in_in.Caption := '';
-  pnl_slot_1_in_out.Caption := '';
-  pnl_slot_2_in_in.Caption := '';
-  pnl_slot_2_in_out.Caption := '';
-  pnl_slot_3_in_in.Caption := '';
-  pnl_slot_3_in_out.Caption := '';
-  pnl_slot_1_out_in.Caption := '';
-  pnl_slot_1_out_out.Caption := '';
-  pnl_slot_2_out_in.Caption := '';
-  pnl_slot_2_out_out.Caption := '';
-  pnl_slot_3_out_in.Caption := '';
-  pnl_slot_3_out_out.Caption := '';
-  pnl_Reflector_in_in.Caption := '';
-  pnl_Reflector_in_out.Caption := '';
-  pnl_in_Char.Caption := '';
-  pnl_out_Char.Caption := '';
+  ResetGUI;
 end;
 
 procedure TEnigmaDemoForm.btn_Slot_1_downClick(Sender : TObject);
@@ -215,6 +194,34 @@ end;
 procedure TEnigmaDemoForm.btn_Slot_3_downClick(Sender : TObject);
 begin
   A.RotorSet[2].DecRotorCurrentPosition;
+  pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));
+end;
+
+procedure TEnigmaDemoForm.ResetGUI;
+begin
+  pnl_Pluboard_in_in.Caption := '';
+  pnl_Pluboard_in_out.Caption := '';
+  pnl_Pluboard_out_in.Caption := '';
+  pnl_Pluboard_out_out.Caption := '';
+  pnl_slot_1_in_in.Caption := '';
+  pnl_slot_1_in_out.Caption := '';
+  pnl_slot_2_in_in.Caption := '';
+  pnl_slot_2_in_out.Caption := '';
+  pnl_slot_3_in_in.Caption := '';
+  pnl_slot_3_in_out.Caption := '';
+  pnl_slot_1_out_in.Caption := '';
+  pnl_slot_1_out_out.Caption := '';
+  pnl_slot_2_out_in.Caption := '';
+  pnl_slot_2_out_out.Caption := '';
+  pnl_slot_3_out_in.Caption := '';
+  pnl_slot_3_out_out.Caption := '';
+  pnl_Reflector_in_in.Caption := '';
+  pnl_Reflector_in_out.Caption := '';
+  pnl_in_Char.Caption := '';
+  pnl_out_Char.Caption := '';
+  pnl_PlugBoard.Caption := A.PlugBoard.HumanizedCipherWiringCircuit;
+  pnl_slot_1.Caption := string(AnsiChar(64 + A.RotorSet[0].RotorCurrentPosition));
+  pnl_Slot_2.Caption := string(AnsiChar(64 + A.RotorSet[1].RotorCurrentPosition));
   pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));
 end;
 
@@ -258,6 +265,7 @@ begin
   A.ConfigureSlot(2, 2, 1);
   A.ConfigureSlot(3, 3, 1);
   A.ConfigurePlugBoard('XBCDEFIHGJKSMNOPQRLTUVWAYZ');
+  ResetGUI;
   pnl_slot_1.Caption := string(AnsiChar(64 + A.RotorSet[0].RotorCurrentPosition));
   pnl_Slot_2.Caption := string(AnsiChar(64 + A.RotorSet[1].RotorCurrentPosition));
   pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));

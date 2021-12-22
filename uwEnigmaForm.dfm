@@ -51,7 +51,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     Top = 478
     Width = 55
     Height = 15
-    Caption = 'Plubboard'
+    Caption = 'Plugboard'
   end
   object Label6: TLabel
     Left = 20
@@ -864,7 +864,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     ParentFont = False
     TabOrder = 21
   end
-  object Panel1: TPanel
+  object pnl_PlugBoard: TPanel
     Left = 20
     Top = 357
     Width = 779
@@ -874,7 +874,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     Color = clWindow
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -64
+    Font.Height = -21
     Font.Name = 'Segoe UI'
     Font.Style = [fsBold]
     ParentBackground = False
