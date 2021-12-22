@@ -82,6 +82,10 @@ type
     btn_Slot_2_up : TBitBtn;
     btn_Slot_1_down : TBitBtn;
     btn_Slot_1_up : TBitBtn;
+    edt_PlugboardItem : TEdit;
+    btn_PlubBoardAdd : TBitBtn;
+    btn_PlubBoardReset : TBitBtn;
+    Label8 : TLabel;
     procedure FormCreate(Sender : TObject);
     procedure FormDestroy(Sender : TObject);
     procedure btn_resetClick(Sender : TObject);
@@ -94,6 +98,8 @@ type
     procedure btn_Slot_1_downClick(Sender : TObject);
     procedure btn_Slot_2_downClick(Sender : TObject);
     procedure btn_Slot_3_downClick(Sender : TObject);
+    procedure btn_PlubBoardResetClick(Sender : TObject);
+    procedure btn_PlubBoardAddClick(Sender : TObject);
   private
     { Private declarations }
     fActive : Boolean;
@@ -102,6 +108,7 @@ type
     procedure OnReflectorSwitch(Sender : TEnigmaCipher; const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar);
     procedure OnChipedChar(Sender : TEnigmaMachine; const aInChar, aOutChar : AnsiChar);
     procedure ResetGUI;
+    procedure ConfigureEnigma;
   public
     A : TEnigmaMachine;
   end;
@@ -153,6 +160,15 @@ begin
   pnl_Info.Caption := 'Typing enabled, press any ALPHA key to get chiped result';
 end;
 
+procedure TEnigmaDemoForm.ConfigureEnigma;
+begin
+  A.ConfigureSlot(1, 1, 1);
+  A.ConfigureSlot(2, 2, 1);
+  A.ConfigureSlot(3, 3, 1);
+  A.ConfigurePlugBoard('XBCDEFIHGJKSMNOPQRLTUVWAYZ');
+  ResetGUI;
+end;
+
 procedure TEnigmaDemoForm.btn_resetClick(Sender : TObject);
 begin
   fActive := False;
@@ -160,11 +176,7 @@ begin
   pnl_Info.Caption := 'Typing disabled';
   edt_InText.Text := '';
   edt_OutText.Text := '';
-  A.ConfigureSlot(1, 1, 1);
-  A.ConfigureSlot(2, 2, 1);
-  A.ConfigureSlot(3, 3, 1);
-  A.ConfigurePlugBoard('XBCDEFIHGJKSMNOPQRLTUVWAYZ');
-  ResetGUI;
+  ConfigureEnigma;
 end;
 
 procedure TEnigmaDemoForm.btn_Slot_1_downClick(Sender : TObject);
@@ -219,7 +231,7 @@ begin
   pnl_Reflector_in_out.Caption := '';
   pnl_in_Char.Caption := '';
   pnl_out_Char.Caption := '';
-  pnl_PlugBoard.Caption := A.PlugBoard.HumanizedCipherWiringCircuit;
+  pnl_PlugBoard.Caption := string(A.PlugBoard.HumanizedCipherWiringCircuit);
   pnl_slot_1.Caption := string(AnsiChar(64 + A.RotorSet[0].RotorCurrentPosition));
   pnl_Slot_2.Caption := string(AnsiChar(64 + A.RotorSet[1].RotorCurrentPosition));
   pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));
@@ -229,6 +241,22 @@ procedure TEnigmaDemoForm.btn_Slot_3_upClick(Sender : TObject);
 begin
   A.RotorSet[2].IncRotorCurrentPosition;
   pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));
+end;
+
+procedure TEnigmaDemoForm.btn_PlubBoardAddClick(Sender : TObject);
+begin
+  if Length(edt_PlugboardItem.Text) = 2 then
+  begin
+    A.PlugBoard.Plug(AnsiChar(edt_PlugboardItem.Text[1]), AnsiChar(edt_PlugboardItem.Text[2]));
+    pnl_PlugBoard.Caption := string(A.PlugBoard.HumanizedCipherWiringCircuit);
+  end;
+end;
+
+procedure TEnigmaDemoForm.btn_PlubBoardResetClick(Sender : TObject);
+begin
+  ConfigureEnigma;
+  A.PlugBoard.Configure(CEnigmaRotorWiringFlat);
+  ResetGUI;
 end;
 
 procedure TEnigmaDemoForm.btn_BatchClick(Sender : TObject);
@@ -261,14 +289,7 @@ begin
   A.Reflector.OnSignalSwitch := OnReflectorSwitch;
   A.PlugBoard.OnSignalSwitch := OnPlugboardSwitch;
   A.OnEnigmaMachineChipedChar := OnChipedChar;
-  A.ConfigureSlot(1, 1, 1);
-  A.ConfigureSlot(2, 2, 1);
-  A.ConfigureSlot(3, 3, 1);
-  A.ConfigurePlugBoard('XBCDEFIHGJKSMNOPQRLTUVWAYZ');
-  ResetGUI;
-  pnl_slot_1.Caption := string(AnsiChar(64 + A.RotorSet[0].RotorCurrentPosition));
-  pnl_Slot_2.Caption := string(AnsiChar(64 + A.RotorSet[1].RotorCurrentPosition));
-  pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));
+  ConfigureEnigma;
 end;
 
 procedure TEnigmaDemoForm.FormDestroy(Sender : TObject);

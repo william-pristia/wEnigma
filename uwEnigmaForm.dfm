@@ -202,6 +202,13 @@ object EnigmaDemoForm: TEnigmaDemoForm
     Brush.Color = 11549711
     Pen.Color = 11549711
   end
+  object Label8: TLabel
+    Left = 221
+    Top = 330
+    Width = 214
+    Height = 15
+    Caption = 'PlugBoard connection format : AX, FT, ...'
+  end
   object btn_start: TBitBtn
     Left = 145
     Top = 15
@@ -1002,5 +1009,32 @@ object EnigmaDemoForm: TEnigmaDemoForm
     Color = clWhite
     ParentBackground = False
     TabOrder = 30
+  end
+  object edt_PlugboardItem: TEdit
+    Left = 20
+    Top = 326
+    Width = 32
+    Height = 23
+    CharCase = ecUpperCase
+    MaxLength = 2
+    TabOrder = 31
+  end
+  object btn_PlubBoardAdd: TBitBtn
+    Left = 58
+    Top = 326
+    Width = 75
+    Height = 25
+    Caption = 'Add'
+    TabOrder = 32
+    OnClick = btn_PlubBoardAddClick
+  end
+  object btn_PlubBoardReset: TBitBtn
+    Left = 139
+    Top = 326
+    Width = 75
+    Height = 25
+    Caption = 'Reset'
+    TabOrder = 33
+    OnClick = btn_PlubBoardResetClick
   end
 end

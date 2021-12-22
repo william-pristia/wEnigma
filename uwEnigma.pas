@@ -58,7 +58,8 @@ type
     fOnSignalSwitch : TEnigmaSignalSwitchEvent;
     function GetHumanizedCipherWiringCircuit : THumanizedCipherWiringCircuit;
   protected
-    procedure SetWiring(const aRightSideConfiguration : TEnigmaOutVirtualKeyBoard);
+    procedure SetSingleConnection(const aLeft, aRight : AnsiChar); dynamic;
+    procedure SetWiring(const aRightSideConfiguration : TEnigmaOutVirtualKeyBoard); dynamic;
     procedure DoSignalSwitch(const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar); virtual;
   public
     constructor Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard); virtual;
@@ -114,6 +115,7 @@ type
   TEnigmaPlugBoard = class(TEnigmaCipher)
   public
     procedure Configure(aPlugBoardWiring : TEnigmaOutVirtualKeyBoard);
+    procedure Plug(const aLeft, aRight : AnsiChar);
   end;
 
   TEnigmaRotorSet = array [1 .. 5] of TEnigmaRotor;
@@ -163,6 +165,9 @@ type
 
 implementation
 
+uses
+  System.AnsiStrings;
+
 const
   CEnigmaReflectorWiringRA = AnsiString('EJMZALYXVBWFCRQUONTSPIKHGD');
   CEnigmaReflectorWiringRB = AnsiString('YRUHQSLDPXNGOKMIEBFZCWVJAT');
@@ -209,13 +214,25 @@ begin
     begin
       if Result = '' then
       begin
-        Result := Format('%S-%S', [fCipherWiringCircuit.LeftSide[I], fCipherWiringCircuit.RightSide[I]]);
+        Result := System.AnsiStrings.Format('%S-%S', [fCipherWiringCircuit.LeftSide[I], fCipherWiringCircuit.RightSide[I]]);
       end
       else
       begin
-        Result := Result + Format(', %S-%S', [fCipherWiringCircuit.LeftSide[I], fCipherWiringCircuit.RightSide[I]]);
+        Result := Result + System.AnsiStrings.Format(', %S-%S', [fCipherWiringCircuit.LeftSide[I], fCipherWiringCircuit.RightSide[I]]);
       end;
     end;
+  end;
+  if Result = '' then
+  begin
+    Result := 'FLAT';
+  end;
+end;
+
+procedure TEnigmaCipher.SetSingleConnection(const aLeft, aRight : AnsiChar);
+begin
+  if Ord(aLeft) in [65 .. 90] then
+  begin
+    fCipherWiringCircuit.RightSide[Ord(aLeft) - 64] := aRight;
   end;
 end;
 
@@ -225,14 +242,16 @@ begin
   begin
     for var I := 1 to Length(CEnigmaRotorWiringFlat) do
     begin
-      fCipherWiringCircuit.RightSide[I] := CEnigmaRotorWiringFlat[I];
+      SetSingleConnection(CEnigmaRotorWiringFlat[I], CEnigmaRotorWiringFlat[I]);
+      // fCipherWiringCircuit.RightSide[I] := CEnigmaRotorWiringFlat[I];
     end;
   end
   else
   begin
     for var I := 1 to Length(aRightSideConfiguration) do
     begin
-      fCipherWiringCircuit.RightSide[I] := aRightSideConfiguration[I];
+      SetSingleConnection(CEnigmaRotorWiringFlat[I], aRightSideConfiguration[I]);
+      // fCipherWiringCircuit.RightSide[I] := aRightSideConfiguration[I];
     end;
   end;
 end;
@@ -451,6 +470,11 @@ begin
   SetWiring(aPlugBoardWiring);
 end;
 
+procedure TEnigmaPlugBoard.Plug(const aLeft, aRight : AnsiChar);
+begin
+  SetSingleConnection(aLeft, aRight);
+end;
+
 procedure TEnigmaMachine.ConfigurePlugBoard(aPlugBoardWiring : TEnigmaOutVirtualKeyBoard);
 begin
   fPlugBoard.Configure(aPlugBoardWiring);
@@ -486,9 +510,9 @@ end;
 constructor TEnigmaMachine.Create;
 begin
   fModel := '';
-  fReflector := TEnigmaReflector.Create('');
+  fReflector := TEnigmaReflector.Create(CEnigmaRotorWiringFlat);
   fRotorSet := TEnigmaRotors.Create;
-  fPlugBoard := TEnigmaPlugBoard.Create('');
+  fPlugBoard := TEnigmaPlugBoard.Create(CEnigmaRotorWiringFlat);
 end;
 
 procedure TEnigmaMachine.DecRotorCurrentPosition(const aRotorSlot : TEnigmaRotorSlots);
