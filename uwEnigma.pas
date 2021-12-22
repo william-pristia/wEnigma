@@ -315,7 +315,7 @@ begin
   lChar := UpCase(aChar);
   lCharIndex := (Ord(lChar) - 64);
   case SignalDirection of
-    sdIn :
+    sdOut :
       begin
         if (SignalDirection = sdIn) and (fRingOffset <> 0) then
         begin
@@ -326,7 +326,7 @@ begin
           end;
         end;
       end;
-    sdOut :
+    sdIn :
       begin
         if (SignalDirection = sdOut) and (fRingOffset <> 0) then
         begin
@@ -346,6 +346,8 @@ function TEnigmaCipherRing.SignalSwitch(const aChar : AnsiChar; const SignalDire
 var
   lChar : AnsiChar;
   lCanChangeSwitchTrigger : Boolean;
+  lSignal1,
+  lSignal2 : TEnigmaSignalDirection;
 begin
   lCanChangeSwitchTrigger := False;
   if SignalSwitchEventTrigger then
@@ -353,9 +355,21 @@ begin
     lCanChangeSwitchTrigger := True;
     SignalSwitchEventTrigger := False;
   end;
-  lChar := FixWiringOffset(aChar, SignalDirection);
+  case SignalDirection  of
+    sdIn :
+    begin
+      lSignal1:=sdIn;
+      lSignal2:=sdOut;
+    end;
+    sdOut :
+    begin
+      lSignal1:=sdIn;
+      lSignal2:=sdOut;
+    end;
+  end;
+  lChar := FixWiringOffset(aChar, lSignal1);
   lChar := inherited SignalSwitch(lChar, SignalDirection);
-  lChar := FixWiringOffset(lChar, SignalDirection);
+  lChar := FixWiringOffset(lChar, lSignal2);
   if lCanChangeSwitchTrigger then
   begin
     SignalSwitchEventTrigger := True;
@@ -406,7 +420,7 @@ begin
   case SignalDirection of
     sdIn :
       begin
-        lCharIndex := lCharIndex + fRotorCurrentPosition;
+        lCharIndex := lCharIndex + (fRotorCurrentPosition - 1);
         if lCharIndex > high(TEnigmaRotorPosition) then
         begin
           lCharIndex := lCharIndex - high(TEnigmaRotorPosition);
@@ -414,7 +428,7 @@ begin
       end;
     sdOut :
       begin
-        lCharIndex := lCharIndex - fRotorCurrentPosition;
+        lCharIndex := lCharIndex - (fRotorCurrentPosition - 1);
         if lCharIndex < 1 then
         begin
           lCharIndex := high(TEnigmaRotorPosition) + lCharIndex;
@@ -441,6 +455,8 @@ function TEnigmaRotor.SignalSwitch(const aChar : AnsiChar; const SignalDirection
 var
   lChar : AnsiChar;
   lCanChangeSwitchTrigger : Boolean;
+  lSignal1,
+  lSignal2 : TEnigmaSignalDirection;
 begin
   lCanChangeSwitchTrigger := False;
   if SignalSwitchEventTrigger then
@@ -448,10 +464,22 @@ begin
     lCanChangeSwitchTrigger := True;
     SignalSwitchEventTrigger := False;
   end;
+  case SignalDirection  of
+    sdIn :
+    begin
+      lSignal1:=sdIn;
+      lSignal2:=sdOut;
+    end;
+    sdOut :
+    begin
+      lSignal1:=sdIn;
+      lSignal2:=sdOut;
+    end;
+  end;
   lChar := UpCase(aChar);
-  lChar := FixRotorOffset(lChar, SignalDirection);
+  lChar := FixRotorOffset(lChar, lSignal1);
   lChar := inherited SignalSwitch(lChar, SignalDirection);
-  lChar := FixRotorOffset(lChar, SignalDirection);
+  lChar := FixRotorOffset(lChar, lSignal2);
   if lCanChangeSwitchTrigger then
   begin
     SignalSwitchEventTrigger := True;

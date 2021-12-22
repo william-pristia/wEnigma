@@ -146,9 +146,9 @@ constructor TEnigmaMachineM3.Create;
 begin
   inherited;
   Model := 'M3 Army';
-  AddRotor(CEnigmaRotorWiringRI, 1, 1, 13, [17]);
-  AddRotor(CEnigmaRotorWiringRII, 2, 2, 3, [5]);
-  AddRotor(CEnigmaRotorWiringRIII, 3, 3, 0, [7, 21]);
+  AddRotor(CEnigmaRotorWiringRI, 1, 1, 0, [17]);
+  AddRotor(CEnigmaRotorWiringRII, 2, 2, 0, [5]);
+  AddRotor(CEnigmaRotorWiringRIII, 3, 3, 0, [22]);
   Reflector.Configure(CEnigmaReflectorWiringRB);
   PlugBoard.Configure(CEnigmaRotorWiringFlat);
 end;
@@ -165,7 +165,7 @@ begin
   A.ConfigureSlot(1, 1, 1);
   A.ConfigureSlot(2, 2, 1);
   A.ConfigureSlot(3, 3, 1);
-  A.ConfigurePlugBoard('XBCDEFIHGJKSMNOPQRLTUVWAYZ');
+//  A.ConfigurePlugBoard('MBCDEIGHFJKLAVOSQRPUTNZXYW');
   ResetGUI;
 end;
 
