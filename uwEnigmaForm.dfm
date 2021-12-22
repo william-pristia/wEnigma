@@ -638,7 +638,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     TabOrder = 7
   end
   object pnl_slot_1_in_out: TPanel
-    Left = 619
+    Left = 618
     Top = 114
     Width = 40
     Height = 49
@@ -672,7 +672,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     TabOrder = 9
   end
   object pnl_slot_2_in_out: TPanel
-    Left = 406
+    Left = 405
     Top = 114
     Width = 40
     Height = 49
@@ -689,7 +689,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     TabOrder = 10
   end
   object pnl_slot_3_in_out: TPanel
-    Left = 190
+    Left = 189
     Top = 114
     Width = 40
     Height = 49
@@ -706,7 +706,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     TabOrder = 11
   end
   object pnl_slot_3_in_in: TPanel
-    Left = 330
+    Left = 329
     Top = 114
     Width = 40
     Height = 49
@@ -774,7 +774,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     TabOrder = 15
   end
   object pnl_slot_3_out_in: TPanel
-    Left = 190
+    Left = 189
     Top = 207
     Width = 40
     Height = 49
@@ -791,7 +791,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     TabOrder = 16
   end
   object pnl_slot_3_out_out: TPanel
-    Left = 330
+    Left = 329
     Top = 207
     Width = 40
     Height = 49
@@ -808,7 +808,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     TabOrder = 17
   end
   object pnl_slot_2_out_in: TPanel
-    Left = 406
+    Left = 405
     Top = 207
     Width = 40
     Height = 49
@@ -842,7 +842,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     TabOrder = 19
   end
   object pnl_slot_1_out_in: TPanel
-    Left = 619
+    Left = 618
     Top = 207
     Width = 40
     Height = 49

@@ -52,13 +52,15 @@ type
   TEnigmaCipher = class
   strict private
     fCipherWiringCircuit : TEnigmaCipherWiringCircuit;
+    fSignalSwitchTrigger : Boolean;
     fOnSignalSwitch : TEnigmaSignalSwitchEvent;
   protected
     procedure SetWiring(const aRightSideConfiguration : TEnigmaOutVirtualKeyBoard);
     procedure DoSignalSwitch(const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar); virtual;
   public
-    constructor Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard); overload; virtual;
+    constructor Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard); virtual;
     function SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection = sdIn) : AnsiChar; dynamic;
+    property SignalSwitchTrigger : Boolean read fSignalSwitchTrigger write fSignalSwitchTrigger;
     property CipherWiringCircuit : TEnigmaCipherWiringCircuit read fCipherWiringCircuit;
     property OnSignalSwitch : TEnigmaSignalSwitchEvent read fOnSignalSwitch write fOnSignalSwitch;
   end;
@@ -71,7 +73,7 @@ type
     function FixWiringOffset(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection) : AnsiChar;
     property RingOffset : TEnigmaRingOffset read fRingOffset write fRingOffset;
   public
-    constructor Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard); overload; override;
+    constructor Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard); override;
     function SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection = sdIn) : AnsiChar; override;
   end;
 
@@ -179,14 +181,18 @@ end;
 
 constructor TEnigmaCipher.Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard);
 begin
+  fSignalSwitchTrigger:=True;
   SetWiring(aCipherRingWiring);
 end;
 
 procedure TEnigmaCipher.DoSignalSwitch(const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar);
 begin
-  if Assigned(fOnSignalSwitch) then
+  if fSignalSwitchTrigger then
   begin
-    fOnSignalSwitch(Self, SignalDirection, aInChar, aOutChar);
+    if Assigned(fOnSignalSwitch) then
+    begin
+      fOnSignalSwitch(Self, SignalDirection, aInChar, aOutChar);
+    end;
   end;
 end;
 
@@ -255,7 +261,7 @@ end;
 
 constructor TEnigmaCipherRing.Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard);
 begin
-  inherited;
+  inherited Create(aCipherRingWiring);
   fRingOffset := 0;
 end;
 
@@ -297,10 +303,21 @@ end;
 function TEnigmaCipherRing.SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection) : AnsiChar;
 var
   lChar : AnsiChar;
+  lCanChangeSwitchTrigger : Boolean;
 begin
+  lCanChangeSwitchTrigger := False;
+  if SignalSwitchTrigger then
+  begin
+    lCanChangeSwitchTrigger := True;
+    SignalSwitchTrigger:=False;
+  end;
   lChar := FixWiringOffset(aChar, SignalDirection);
   lChar := inherited SignalSwitch(lChar, SignalDirection);
   lChar := FixWiringOffset(lChar, SignalDirection);
+  if lCanChangeSwitchTrigger then
+  begin
+    SignalSwitchTrigger:=True;
+  end;
   DoSignalSwitch(SignalDirection, aChar, lChar);
   Result := lChar;
 end;
@@ -381,11 +398,22 @@ end;
 function TEnigmaRotor.SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection) : AnsiChar;
 var
   lChar : AnsiChar;
+  lCanChangeSwitchTrigger : Boolean;
 begin
+  lCanChangeSwitchTrigger := False;
+  if SignalSwitchTrigger then
+  begin
+    lCanChangeSwitchTrigger := True;
+    SignalSwitchTrigger:=False;
+  end;
   lChar := UpCase(aChar);
   lChar := FixRotorOffset(lChar, SignalDirection);
   lChar := inherited SignalSwitch(lChar, SignalDirection);
   lChar := FixRotorOffset(lChar, SignalDirection);
+  if lCanChangeSwitchTrigger then
+  begin
+    SignalSwitchTrigger:=True;
+  end;
   DoSignalSwitch(SignalDirection, aChar, lChar);
   Result := lChar;
 end;
@@ -435,7 +463,7 @@ end;
 constructor TEnigmaMachine.Create;
 begin
   fModel := '';
-  fReflector := TEnigmaReflector.Create;
+  fReflector := TEnigmaReflector.Create('');
   fRotorSet := TEnigmaRotors.Create;
   fPlugBoard := TEnigmaPlugBoard.Create('');
 end;
