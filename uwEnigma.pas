@@ -52,7 +52,7 @@ type
   TEnigmaCipher = class
   strict private
     fCipherWiringCircuit : TEnigmaCipherWiringCircuit;
-    fSignalSwitchTrigger : Boolean;
+    fSignalSwitchEventTrigger : Boolean;
     fOnSignalSwitch : TEnigmaSignalSwitchEvent;
   protected
     procedure SetWiring(const aRightSideConfiguration : TEnigmaOutVirtualKeyBoard);
@@ -60,7 +60,7 @@ type
   public
     constructor Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard); virtual;
     function SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection = sdIn) : AnsiChar; dynamic;
-    property SignalSwitchTrigger : Boolean read fSignalSwitchTrigger write fSignalSwitchTrigger;
+    property SignalSwitchEventTrigger : Boolean read fSignalSwitchEventTrigger write fSignalSwitchEventTrigger;
     property CipherWiringCircuit : TEnigmaCipherWiringCircuit read fCipherWiringCircuit;
     property OnSignalSwitch : TEnigmaSignalSwitchEvent read fOnSignalSwitch write fOnSignalSwitch;
   end;
@@ -181,13 +181,13 @@ end;
 
 constructor TEnigmaCipher.Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard);
 begin
-  fSignalSwitchTrigger:=True;
+  fSignalSwitchEventTrigger:=True;
   SetWiring(aCipherRingWiring);
 end;
 
 procedure TEnigmaCipher.DoSignalSwitch(const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar);
 begin
-  if fSignalSwitchTrigger then
+  if fSignalSwitchEventTrigger then
   begin
     if Assigned(fOnSignalSwitch) then
     begin
@@ -306,17 +306,17 @@ var
   lCanChangeSwitchTrigger : Boolean;
 begin
   lCanChangeSwitchTrigger := False;
-  if SignalSwitchTrigger then
+  if SignalSwitchEventTrigger then
   begin
     lCanChangeSwitchTrigger := True;
-    SignalSwitchTrigger:=False;
+    SignalSwitchEventTrigger:=False;
   end;
   lChar := FixWiringOffset(aChar, SignalDirection);
   lChar := inherited SignalSwitch(lChar, SignalDirection);
   lChar := FixWiringOffset(lChar, SignalDirection);
   if lCanChangeSwitchTrigger then
   begin
-    SignalSwitchTrigger:=True;
+    SignalSwitchEventTrigger:=True;
   end;
   DoSignalSwitch(SignalDirection, aChar, lChar);
   Result := lChar;
@@ -401,10 +401,10 @@ var
   lCanChangeSwitchTrigger : Boolean;
 begin
   lCanChangeSwitchTrigger := False;
-  if SignalSwitchTrigger then
+  if SignalSwitchEventTrigger then
   begin
     lCanChangeSwitchTrigger := True;
-    SignalSwitchTrigger:=False;
+    SignalSwitchEventTrigger:=False;
   end;
   lChar := UpCase(aChar);
   lChar := FixRotorOffset(lChar, SignalDirection);
@@ -412,7 +412,7 @@ begin
   lChar := FixRotorOffset(lChar, SignalDirection);
   if lCanChangeSwitchTrigger then
   begin
-    SignalSwitchTrigger:=True;
+    SignalSwitchEventTrigger:=True;
   end;
   DoSignalSwitch(SignalDirection, aChar, lChar);
   Result := lChar;
