@@ -314,22 +314,22 @@ begin
   lChar := UpCase(aChar);
   lCharIndex := (Ord(lChar) - 64);
   case SignalDirection of
-    sdOut :
+    sdIn :
       begin
-        if (SignalDirection = sdIn) and (fRingOffset <> 0) then
+        if (fRingOffset <> 0) then
         begin
-          lCharIndex := lCharIndex + (fRingOffset);
+          lCharIndex := lCharIndex + (fRingOffset - 1);
           if lCharIndex > high(TEnigmaRingOffset) then
           begin
             lCharIndex := lCharIndex - high(TEnigmaRingOffset);
           end;
         end;
       end;
-    sdIn :
+    sdOut :
       begin
-        if (SignalDirection = sdOut) and (fRingOffset <> 0) then
+        if (fRingOffset <> 0) then
         begin
-          lCharIndex := lCharIndex - (fRingOffset);
+          lCharIndex := lCharIndex - (fRingOffset - 1);
           if lCharIndex < 1 then
           begin
             lCharIndex := high(TEnigmaRingOffset) + lCharIndex;
