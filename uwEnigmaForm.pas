@@ -20,16 +20,87 @@ uses
 type
 
   TEnigmaDemoForm = class(TForm)
-    BitBtn1 : TBitBtn;
-    Edit1 : TEdit;
-    Edit2 : TEdit;
-    BitBtn2 : TBitBtn;
-    procedure BitBtn1Click(Sender : TObject);
+    btn_start : TBitBtn;
+    edt_InText: TEdit;
+    edt_OutText: TEdit;
+    btn_reset : TBitBtn;
+    pnl_Slot_3 : TPanel;
+    pnl_Slot_2 : TPanel;
+    pnl_slot_1 : TPanel;
+    pnl_slot_1_in_in : TPanel;
+    pnl_slot_1_in_out : TPanel;
+    pnl_slot_2_in_in : TPanel;
+    pnl_slot_2_in_out : TPanel;
+    pnl_slot_3_in_out : TPanel;
+    pnl_slot_3_in_in : TPanel;
+    pnl_Reflector : TPanel;
+    pnl_Reflector_in_in : TPanel;
+    pnl_Reflector_in_out : TPanel;
+    pnl_slot_3_out_in : TPanel;
+    pnl_slot_3_out_out : TPanel;
+    pnl_slot_2_out_in : TPanel;
+    pnl_slot_2_out_out : TPanel;
+    pnl_slot_1_out_in : TPanel;
+    pnl_slot_1_out_out : TPanel;
+    Panel1 : TPanel;
+    pnl_Pluboard_in_in : TPanel;
+    pnl_Pluboard_in_out : TPanel;
+    pnl_Pluboard_out_in : TPanel;
+    pnl_Pluboard_out_out : TPanel;
+    pnl_in_Char : TPanel;
+    pnl_out_Char : TPanel;
+    btn_Batch : TBitBtn;
+    Label1 : TLabel;
+    Label2 : TLabel;
+    Label3 : TLabel;
+    Label4 : TLabel;
+    Label5 : TLabel;
+    Label6 : TLabel;
+    Label7 : TLabel;
+    pnl_Info : TPanel;
+    Shape1 : TShape;
+    Shape2 : TShape;
+    Shape3 : TShape;
+    Shape4 : TShape;
+    Shape5 : TShape;
+    Shape6 : TShape;
+    Shape7 : TShape;
+    Shape8 : TShape;
+    Shape9 : TShape;
+    Shape10 : TShape;
+    Shape11 : TShape;
+    Shape12 : TShape;
+    Shape13 : TShape;
+    Shape14 : TShape;
+    Shape15 : TShape;
+    Shape16 : TShape;
+    Shape17 : TShape;
+    Shape18 : TShape;
+    btn_Slot_3_up : TBitBtn;
+    btn_Slot_3_down : TBitBtn;
+    btn_Slot_2_down : TBitBtn;
+    btn_Slot_2_up : TBitBtn;
+    btn_Slot_1_down : TBitBtn;
+    btn_Slot_1_up : TBitBtn;
     procedure FormCreate(Sender : TObject);
     procedure FormDestroy(Sender : TObject);
-    procedure BitBtn2Click(Sender : TObject);
+    procedure btn_resetClick(Sender : TObject);
+    procedure FormKeyDown(Sender : TObject; var Key : Word; Shift : TShiftState);
+    procedure btn_startClick(Sender : TObject);
+    procedure btn_BatchClick(Sender : TObject);
+    procedure btn_Slot_3_upClick(Sender : TObject);
+    procedure btn_Slot_2_upClick(Sender : TObject);
+    procedure btn_Slot_1_upClick(Sender : TObject);
+    procedure btn_Slot_1_downClick(Sender : TObject);
+    procedure btn_Slot_2_downClick(Sender : TObject);
+    procedure btn_Slot_3_downClick(Sender : TObject);
   private
     { Private declarations }
+    fActive : Boolean;
+    procedure OnPlugboardSwitch(Sender : TEnigmaCipher; const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar);
+    procedure OnRotorSwitch(Sender : TEnigmaCipher; const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar);
+    procedure OnReflectorSwitch(Sender : TEnigmaCipher; const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar);
+    procedure OnChipedChar(Sender : TEnigmaMachine; const aInChar, aOutChar : AnsiChar);
   public
     A : TEnigmaMachine;
   end;
@@ -69,45 +140,125 @@ begin
   Model := 'M3 Army';
   AddRotor(CEnigmaRotorWiringRI, 1, 1, 13, [17]);
   AddRotor(CEnigmaRotorWiringRII, 2, 2, 3, [5]);
-  AddRotor(CEnigmaRotorWiringRIII, 3, 3, 0, [7,21]);
+  AddRotor(CEnigmaRotorWiringRIII, 3, 3, 0, [7, 21]);
   Reflector.Configure(CEnigmaReflectorWiringRB);
   PlugBoard.Configure(CEnigmaRotorWiringFlat);
 end;
 
-procedure TEnigmaDemoForm.BitBtn1Click(Sender : TObject);
+procedure TEnigmaDemoForm.btn_startClick(Sender : TObject);
 begin
-  if Edit1.Text <> '' then
+  fActive := True;
+  pnl_Info.Caption := 'Typing enabled, press any ALPHA key to get chiped result';
+end;
+
+procedure TEnigmaDemoForm.btn_resetClick(Sender : TObject);
+begin
+  fActive := False;
+  pnl_Info.Caption := 'Typing disabled';
+  edt_InText.Text := '';
+  edt_OutText.Text := '';
+  A.ConfigureSlot(1, 1, 1);
+  A.ConfigureSlot(2, 2, 1);
+  A.ConfigureSlot(3, 3, 1);
+  A.ConfigurePlugBoard('XBCDEFIHGJKSMNOPQRLTUVWAYZ');
+  pnl_slot_1.Caption := string(AnsiChar(64 + A.RotorSet[0].RotorCurrentPosition));
+  pnl_Slot_2.Caption := string(AnsiChar(64 + A.RotorSet[1].RotorCurrentPosition));
+  pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));
+  pnl_Pluboard_in_in.Caption := '';
+  pnl_Pluboard_in_out.Caption := '';
+  pnl_Pluboard_out_in.Caption := '';
+  pnl_Pluboard_out_out.Caption := '';
+  pnl_slot_1_in_in.Caption := '';
+  pnl_slot_1_in_out.Caption := '';
+  pnl_slot_2_in_in.Caption := '';
+  pnl_slot_2_in_out.Caption := '';
+  pnl_slot_3_in_in.Caption := '';
+  pnl_slot_3_in_out.Caption := '';
+  pnl_slot_1_out_in.Caption := '';
+  pnl_slot_1_out_out.Caption := '';
+  pnl_slot_2_out_in.Caption := '';
+  pnl_slot_2_out_out.Caption := '';
+  pnl_slot_3_out_in.Caption := '';
+  pnl_slot_3_out_out.Caption := '';
+  pnl_Reflector_in_in.Caption := '';
+  pnl_Reflector_in_out.Caption := '';
+  pnl_in_Char.Caption := '';
+  pnl_out_Char.Caption := '';
+end;
+
+procedure TEnigmaDemoForm.btn_Slot_1_downClick(Sender : TObject);
+begin
+  A.RotorSet[0].DecRotorCurrentPosition;
+  pnl_slot_1.Caption := string(AnsiChar(64 + A.RotorSet[0].RotorCurrentPosition));
+end;
+
+procedure TEnigmaDemoForm.btn_Slot_1_upClick(Sender : TObject);
+begin
+  A.RotorSet[0].IncRotorCurrentPosition;
+  pnl_slot_1.Caption := string(AnsiChar(64 + A.RotorSet[0].RotorCurrentPosition));
+end;
+
+procedure TEnigmaDemoForm.btn_Slot_2_downClick(Sender : TObject);
+begin
+  A.RotorSet[1].DecRotorCurrentPosition;
+  pnl_Slot_2.Caption := string(AnsiChar(64 + A.RotorSet[1].RotorCurrentPosition));
+end;
+
+procedure TEnigmaDemoForm.btn_Slot_2_upClick(Sender : TObject);
+begin
+  A.RotorSet[1].IncRotorCurrentPosition;
+  pnl_Slot_2.Caption := string(AnsiChar(64 + A.RotorSet[1].RotorCurrentPosition));
+end;
+
+procedure TEnigmaDemoForm.btn_Slot_3_downClick(Sender : TObject);
+begin
+  A.RotorSet[2].DecRotorCurrentPosition;
+  pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));
+end;
+
+procedure TEnigmaDemoForm.btn_Slot_3_upClick(Sender : TObject);
+begin
+  A.RotorSet[2].IncRotorCurrentPosition;
+  pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));
+end;
+
+procedure TEnigmaDemoForm.btn_BatchClick(Sender : TObject);
+var
+  lInChar, lOutChar : AnsiChar;
+begin
+  if edt_InText.Text <> '' then
   begin
-    Edit2.Text := '';
-    for var I := 1 to Length(Edit1.Text) do
+    edt_OutText.Text := '';
+    for var I := 1 to Length(edt_InText.Text) do
     begin
-      if Trim(Edit1.Text[I]) <> '' then
+      if Trim(edt_InText.Text[I]) <> '' then
       begin
-        Edit2.Text := Edit2.Text + string(A.GetCiphedChar(AnsiChar(Edit1.Text[I])));
-        if I mod 5 = 0 then
-        begin
-          Edit2.Text := Edit2.Text + ' ';
-        end;
+        lInChar := AnsiChar(edt_InText.Text[I]);
+        lOutChar := A.GetCiphedChar(lInChar);
+        edt_OutText.Text := edt_OutText.Text + string(lOutChar);
       end;
     end;
   end;
 end;
 
-procedure TEnigmaDemoForm.BitBtn2Click(Sender : TObject);
-begin
-  A.ConfigureSlot(1, 1, 0);
-  A.ConfigureSlot(2, 2, 0);
-  A.ConfigureSlot(3, 3, 0);
-  A.ConfigurePlugBoard('XBCDEFIHGJKSMNOPQRLTUVWAYZ');
-end;
-
 procedure TEnigmaDemoForm.FormCreate(Sender : TObject);
 begin
+  fActive := False;
+  pnl_Info.Caption := 'Typing disabled';
   A := TEnigmaMachineM3.Create;
-  A.ConfigureSlot(1, 1, 0);
-  A.ConfigureSlot(2, 2, 0);
-  A.ConfigureSlot(3, 3, 0);
+  A.RotorSet[0].OnSignalSwitch := OnRotorSwitch;
+  A.RotorSet[1].OnSignalSwitch := OnRotorSwitch;
+  A.RotorSet[2].OnSignalSwitch := OnRotorSwitch;
+  A.Reflector.OnSignalSwitch := OnReflectorSwitch;
+  A.PlugBoard.OnSignalSwitch := OnPlugboardSwitch;
+  A.OnEnigmaMachineChipedChar := OnChipedChar;
+  A.ConfigureSlot(1, 1, 1);
+  A.ConfigureSlot(2, 2, 1);
+  A.ConfigureSlot(3, 3, 1);
   A.ConfigurePlugBoard('XBCDEFIHGJKSMNOPQRLTUVWAYZ');
+  pnl_slot_1.Caption := string(AnsiChar(64 + A.RotorSet[0].RotorCurrentPosition));
+  pnl_Slot_2.Caption := string(AnsiChar(64 + A.RotorSet[1].RotorCurrentPosition));
+  pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));
 end;
 
 procedure TEnigmaDemoForm.FormDestroy(Sender : TObject);
@@ -115,6 +266,117 @@ begin
   if A <> nil then
   begin
     A.Free;
+  end;
+end;
+
+procedure TEnigmaDemoForm.FormKeyDown(Sender : TObject; var Key : Word; Shift : TShiftState);
+var
+  lInChar : AnsiChar;
+begin
+  if fActive then
+  begin
+    if Key in [65 .. 90] then
+    begin
+      lInChar := UpCase(AnsiChar(Key));
+      A.GetCiphedChar(lInChar);
+    end;
+  end;
+end;
+
+procedure TEnigmaDemoForm.OnChipedChar(Sender : TEnigmaMachine; const aInChar, aOutChar : AnsiChar);
+begin
+  if Sender is TEnigmaMachine then
+  begin
+    pnl_in_Char.Caption := string(aInChar);
+    pnl_out_Char.Caption := string(aOutChar);
+    if fActive then
+    begin
+      edt_InText.Text := edt_InText.Text + pnl_in_Char.Caption;
+      edt_OutText.Text := edt_OutText.Text + pnl_out_Char.Caption;
+    end;
+  end;
+end;
+
+procedure TEnigmaDemoForm.OnPlugboardSwitch(Sender : TEnigmaCipher; const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar);
+begin
+  if Sender is TEnigmaPlugBoard then
+  begin
+    case SignalDirection of
+      sdIn :
+        begin
+          pnl_Pluboard_in_in.Caption := string(aInChar);
+          pnl_Pluboard_in_out.Caption := string(aOutChar);
+        end;
+      sdOut :
+        begin
+          pnl_Pluboard_out_in.Caption := string(aInChar);
+          pnl_Pluboard_out_out.Caption := string(aOutChar);
+        end;
+    end;
+  end;
+end;
+
+procedure TEnigmaDemoForm.OnReflectorSwitch(Sender : TEnigmaCipher; const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar);
+begin
+  if Sender is TEnigmaReflector then
+  begin
+    pnl_Reflector_in_in.Caption := string(aInChar);
+    pnl_Reflector_in_out.Caption := string(aOutChar);
+  end;
+end;
+
+procedure TEnigmaDemoForm.OnRotorSwitch(Sender : TEnigmaCipher; const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar);
+begin
+  if Sender is TEnigmaRotor then
+  begin
+    case SignalDirection of
+      sdIn :
+        begin
+          case TEnigmaRotor(Sender).RotorSlot of
+            1 :
+              begin
+                pnl_slot_1.Caption := string(AnsiChar(64 + TEnigmaRotor(Sender).RotorCurrentPosition));
+                pnl_slot_1_in_in.Caption := string(aInChar);
+                pnl_slot_1_in_out.Caption := string(aOutChar);
+              end;
+            2 :
+              begin
+                pnl_Slot_2.Caption := string(AnsiChar(64 + TEnigmaRotor(Sender).RotorCurrentPosition));
+                pnl_slot_2_in_in.Caption := string(aInChar);
+                pnl_slot_2_in_out.Caption := string(aOutChar);
+              end;
+            3 :
+              begin
+                pnl_Slot_3.Caption := string(AnsiChar(64 + TEnigmaRotor(Sender).RotorCurrentPosition));
+                pnl_slot_3_in_in.Caption := string(aInChar);
+                pnl_slot_3_in_out.Caption := string(aOutChar);
+              end;
+          end;
+        end;
+      sdOut :
+        begin
+          case TEnigmaRotor(Sender).RotorSlot of
+            1 :
+              begin
+                pnl_slot_1.Caption := string(AnsiChar(64 + TEnigmaRotor(Sender).RotorCurrentPosition));
+                pnl_slot_1_out_in.Caption := string(aInChar);
+                pnl_slot_1_out_out.Caption := string(aOutChar);
+              end;
+            2 :
+              begin
+                pnl_Slot_2.Caption := string(AnsiChar(64 + TEnigmaRotor(Sender).RotorCurrentPosition));
+                pnl_slot_2_out_in.Caption := string(aInChar);
+                pnl_slot_2_out_out.Caption := string(aOutChar);
+              end;
+            3 :
+              begin
+                pnl_Slot_3.Caption := string(AnsiChar(64 + TEnigmaRotor(Sender).RotorCurrentPosition));
+                pnl_slot_3_out_in.Caption := string(aInChar);
+                pnl_slot_3_out_out.Caption := string(aOutChar);
+              end;
+          end;
+        end;
+    end;
   end;
 end;
 

@@ -22,6 +22,7 @@
 #*.obj
 
 # Delphi compiler-generated binaries (safe to delete)
+*.dproj
 *.exe
 *.dll
 *.bpl
@@ -78,4 +79,5 @@ temp/
 users/
 win32/
 win64/
-
+projects/
+installation/
