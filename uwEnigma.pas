@@ -15,13 +15,13 @@ const
   CEnigmaRotorWiringFlat = AnsiString('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
 const
-  CEnigmaRotorsSet = 5;
+  CEnigmaMaxRotors = 5;
 
 type
   TEnigmaSignalDirection = (sdIn, sdOut);
 
-  TEnigmaRotorIDs = 0 .. CEnigmaRotorsSet;
-  TEnigmaRotorSlots = 0 .. CEnigmaRotorsSet; // 0 Rotor slot unused
+  TEnigmaRotorIDs = 0 .. CEnigmaMaxRotors;
+  TEnigmaRotorSlots = 0 .. CEnigmaMaxRotors; // 0 Rotor slot unused
 
   TEnigmaRingOffset = 0 .. CEnigmaChars; // 0 no offset
   TEnigmaRotorPosition = 0 .. CEnigmaChars; // 0 Rotor not in start position
@@ -452,7 +452,7 @@ begin
   C := aChar;
   // Plugboard in switching
   C := fPlugBoard.SignalSwitch(C, sdIn);
-  for lSlot := 1 to CEnigmaRotorsSet do
+  for lSlot := 1 to CEnigmaMaxRotors do
   begin
     // RightLeft Signal Direction
     if RotorIndexFromRotorSlot(lSlot, lRotorIndex) then
@@ -462,7 +462,7 @@ begin
   end;
   // Reflector switching
   C := fReflector.SignalSwitch(C);
-  for lSlot := CEnigmaRotorsSet downto 1 do
+  for lSlot := CEnigmaMaxRotors downto 1 do
   begin
     // LeftToRight Signal Direction
     if RotorIndexFromRotorSlot(lSlot, lRotorIndex) then
