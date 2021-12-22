@@ -23,6 +23,8 @@ object EnigmaDemoForm: TEnigmaDemoForm
     Top = 262
     Width = 38
     Height = 15
+    Alignment = taCenter
+    AutoSize = False
     Caption = 'Rotor 1'
   end
   object Label2: TLabel
@@ -30,6 +32,8 @@ object EnigmaDemoForm: TEnigmaDemoForm
     Top = 262
     Width = 38
     Height = 15
+    Alignment = taCenter
+    AutoSize = False
     Caption = 'Rotor 2'
   end
   object Label3: TLabel
@@ -37,6 +41,8 @@ object EnigmaDemoForm: TEnigmaDemoForm
     Top = 262
     Width = 38
     Height = 15
+    Alignment = taCenter
+    AutoSize = False
     Caption = 'Rotor 3'
   end
   object Label4: TLabel
@@ -44,6 +50,8 @@ object EnigmaDemoForm: TEnigmaDemoForm
     Top = 262
     Width = 47
     Height = 15
+    Alignment = taCenter
+    AutoSize = False
     Caption = 'Reflector'
   end
   object Label5: TLabel

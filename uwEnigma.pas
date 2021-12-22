@@ -73,10 +73,12 @@ type
   // internal rotor Ring
   TEnigmaCipherRing = class(TEnigmaCipher)
   strict private
+    fName : String;
     fRingOffset : TEnigmaRingOffset;
   protected
     function FixWiringOffset(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection) : AnsiChar;
     property RingOffset : TEnigmaRingOffset read fRingOffset write fRingOffset;
+    property Name : String read fName write fName;
   public
     constructor Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard); override;
     function SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection = sdIn) : AnsiChar; override;
@@ -103,12 +105,17 @@ type
     property RotorNotchPositions : TEnigmaRotorNotchPositions read fRotorNotchPositions write fRotorNotchPositions;
     property RotorSlot : TEnigmaRotorSlots read fRotorSlot write fRotorSlot;
     property RotorCurrentPosition : TEnigmaRotorPosition read fRotorCurrentPosition write fRotorCurrentPosition;
+
+    property Name;
     property RingOffset;
   end;
 
   // reflector
   TEnigmaReflector = class(TEnigmaCipherRing)
     procedure Configure(aReflectorWiring : TEnigmaOutVirtualKeyBoard);
+
+    property Name;
+    property RingOffset;
   end;
 
   // plugboard
@@ -303,6 +310,7 @@ end;
 constructor TEnigmaCipherRing.Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard);
 begin
   inherited Create(aCipherRingWiring);
+  fName := '';
   fRingOffset := 0;
 end;
 

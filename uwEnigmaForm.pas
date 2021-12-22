@@ -150,6 +150,10 @@ begin
   AddRotor(CEnigmaRotorWiringRI, 1, 1, 1, [17]);
   AddRotor(CEnigmaRotorWiringRII, 2, 2, 1, [5]);
   AddRotor(CEnigmaRotorWiringRIII, 3, 3, 1, [22]);
+  RotorSet[0].Name:='M3 I';
+  RotorSet[1].Name:='M3 II';
+  RotorSet[2].Name:='M3 III';
+  Reflector.Name:='UKW-B';
   Reflector.Configure(CEnigmaReflectorWiringRB);
   PlugBoard.Configure(CEnigmaRotorWiringFlat);
 end;
@@ -236,6 +240,10 @@ begin
   pnl_slot_1.Caption := string(AnsiChar(64 + A.RotorSet[0].RotorCurrentPosition));
   pnl_Slot_2.Caption := string(AnsiChar(64 + A.RotorSet[1].RotorCurrentPosition));
   pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));
+  Label1.Caption:=A.RotorSet[0].Name;
+  Label2.Caption:=A.RotorSet[1].Name;
+  Label3.Caption:=A.RotorSet[2].Name;
+  Label4.Caption:=A.Reflector.Name;
 end;
 
 procedure TEnigmaDemoForm.btn_Slot_3_upClick(Sender : TObject);
