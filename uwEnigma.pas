@@ -174,11 +174,12 @@ const
   CEnigmaReflectorWiringRC = AnsiString('FVPJIAOYEDRZXWGCTKUQSBNMHL');
   CEnigmaReflectorWiringRBThin = AnsiString('ENKQAUYWJICOPBLMDXZVFTHRGS');
 
-  CEnigmaRotorWiringRI = AnsiString('EKMFLGDQVZNTOWYHXUSPAIBRCJ');
-  CEnigmaRotorWiringRII = AnsiString('AJDKSIRUXBLHWTMCQGZNPYFVOE');
-  CEnigmaRotorWiringRIII = AnsiString('BDFHJLCPRTXVZNYEIWGAKMUSQO');
-  CEnigmaRotorWiringRIV = AnsiString('ESOVPZJAYQUIRHXLNFTGKDCMWB');
-  CEnigmaRotorWiringRV = AnsiString('VZBRGITYUPSDNHLXAWMJQOFECK');
+  CEnigmaRotorWiringRI = AnsiString('EKMFLGDQVZNTOWYHXUSPAIBRCJ'); // notch 17
+  CEnigmaRotorWiringRII = AnsiString('AJDKSIRUXBLHWTMCQGZNPYFVOE'); // notch 5
+  CEnigmaRotorWiringRIII = AnsiString('BDFHJLCPRTXVZNYEIWGAKMUSQO'); // notch 22
+  CEnigmaRotorWiringRIV = AnsiString('ESOVPZJAYQUIRHXLNFTGKDCMWB'); // notch 10
+  CEnigmaRotorWiringRV = AnsiString('VZBRGITYUPSDNHLXAWMJQOFECK'); // notch 26
+
   CEnigmaRotorWiringRVI = AnsiString('JPGVOUMFYQBENHZRDKASXLICTW');
   CEnigmaRotorWiringRVII = AnsiString('NZJHGRCXMYSWBOUFAIVLPEKQDT');
   CEnigmaRotorWiringRVIII = AnsiString('FKQHTLXOCBJSPDZRAMEWNIUYGV');
@@ -243,7 +244,6 @@ begin
     for var I := 1 to Length(CEnigmaRotorWiringFlat) do
     begin
       SetSingleConnection(CEnigmaRotorWiringFlat[I], CEnigmaRotorWiringFlat[I]);
-      // fCipherWiringCircuit.RightSide[I] := CEnigmaRotorWiringFlat[I];
     end;
   end
   else
@@ -251,7 +251,6 @@ begin
     for var I := 1 to Length(aRightSideConfiguration) do
     begin
       SetSingleConnection(CEnigmaRotorWiringFlat[I], aRightSideConfiguration[I]);
-      // fCipherWiringCircuit.RightSide[I] := aRightSideConfiguration[I];
     end;
   end;
 end;
@@ -346,8 +345,7 @@ function TEnigmaCipherRing.SignalSwitch(const aChar : AnsiChar; const SignalDire
 var
   lChar : AnsiChar;
   lCanChangeSwitchTrigger : Boolean;
-  lSignal1,
-  lSignal2 : TEnigmaSignalDirection;
+  lSignal1, lSignal2 : TEnigmaSignalDirection;
 begin
   lCanChangeSwitchTrigger := False;
   if SignalSwitchEventTrigger then
@@ -355,17 +353,17 @@ begin
     lCanChangeSwitchTrigger := True;
     SignalSwitchEventTrigger := False;
   end;
-  case SignalDirection  of
+  case SignalDirection of
     sdIn :
-    begin
-      lSignal1:=sdIn;
-      lSignal2:=sdOut;
-    end;
+      begin
+        lSignal1 := sdIn;
+        lSignal2 := sdOut;
+      end;
     sdOut :
-    begin
-      lSignal1:=sdIn;
-      lSignal2:=sdOut;
-    end;
+      begin
+        lSignal1 := sdIn;
+        lSignal2 := sdOut;
+      end;
   end;
   lChar := FixWiringOffset(aChar, lSignal1);
   lChar := inherited SignalSwitch(lChar, SignalDirection);
@@ -455,8 +453,7 @@ function TEnigmaRotor.SignalSwitch(const aChar : AnsiChar; const SignalDirection
 var
   lChar : AnsiChar;
   lCanChangeSwitchTrigger : Boolean;
-  lSignal1,
-  lSignal2 : TEnigmaSignalDirection;
+  lSignal1, lSignal2 : TEnigmaSignalDirection;
 begin
   lCanChangeSwitchTrigger := False;
   if SignalSwitchEventTrigger then
@@ -464,17 +461,17 @@ begin
     lCanChangeSwitchTrigger := True;
     SignalSwitchEventTrigger := False;
   end;
-  case SignalDirection  of
+  case SignalDirection of
     sdIn :
-    begin
-      lSignal1:=sdIn;
-      lSignal2:=sdOut;
-    end;
+      begin
+        lSignal1 := sdIn;
+        lSignal2 := sdOut;
+      end;
     sdOut :
-    begin
-      lSignal1:=sdIn;
-      lSignal2:=sdOut;
-    end;
+      begin
+        lSignal1 := sdIn;
+        lSignal2 := sdOut;
+      end;
   end;
   lChar := UpCase(aChar);
   lChar := FixRotorOffset(lChar, lSignal1);
@@ -501,6 +498,7 @@ end;
 procedure TEnigmaPlugBoard.Plug(const aLeft, aRight : AnsiChar);
 begin
   SetSingleConnection(aLeft, aRight);
+  SetSingleConnection(aRight, aLeft);
 end;
 
 procedure TEnigmaMachine.ConfigurePlugBoard(aPlugBoardWiring : TEnigmaOutVirtualKeyBoard);
