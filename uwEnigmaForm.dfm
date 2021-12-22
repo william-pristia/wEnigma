@@ -42,14 +42,14 @@ object EnigmaDemoForm: TEnigmaDemoForm
   object Label4: TLabel
     Left = 42
     Top = 262
-    Width = 50
+    Width = 47
     Height = 15
     Caption = 'Reflector'
   end
   object Label5: TLabel
     Left = 375
     Top = 478
-    Width = 58
+    Width = 55
     Height = 15
     Caption = 'Plubboard'
   end
@@ -216,6 +216,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     Top = 46
     Width = 779
     Height = 23
+    CharCase = ecUpperCase
     TabOrder = 2
   end
   object edt_OutText: TEdit
@@ -223,6 +224,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     Top = 75
     Width = 779
     Height = 23
+    CharCase = ecUpperCase
     ReadOnly = True
     TabOrder = 3
   end
@@ -304,9 +306,6 @@ object EnigmaDemoForm: TEnigmaDemoForm
         0808080802020202020202020202020202020202020202020202}
       TabOrder = 0
       OnClick = btn_Slot_3_upClick
-      ExplicitLeft = 24
-      ExplicitTop = 113
-      ExplicitWidth = 75
     end
     object btn_Slot_3_down: TBitBtn
       AlignWithMargins = True
@@ -360,9 +359,6 @@ object EnigmaDemoForm: TEnigmaDemoForm
         0909090909020202020202020202020202020202020202020202}
       TabOrder = 1
       OnClick = btn_Slot_3_downClick
-      ExplicitLeft = 9
-      ExplicitTop = 77
-      ExplicitWidth = 75
     end
   end
   object pnl_Slot_2: TPanel
@@ -434,8 +430,6 @@ object EnigmaDemoForm: TEnigmaDemoForm
         0909090909020202020202020202020202020202020202020202}
       TabOrder = 0
       OnClick = btn_Slot_2_downClick
-      ExplicitLeft = 6
-      ExplicitTop = 113
     end
     object btn_Slot_2_up: TBitBtn
       AlignWithMargins = True
@@ -489,8 +483,6 @@ object EnigmaDemoForm: TEnigmaDemoForm
         0808080802020202020202020202020202020202020202020202}
       TabOrder = 1
       OnClick = btn_Slot_2_upClick
-      ExplicitLeft = 6
-      ExplicitTop = 6
     end
   end
   object pnl_slot_1: TPanel
@@ -562,8 +554,6 @@ object EnigmaDemoForm: TEnigmaDemoForm
         0909090909020202020202020202020202020202020202020202}
       TabOrder = 0
       OnClick = btn_Slot_1_downClick
-      ExplicitLeft = 6
-      ExplicitTop = 113
     end
     object btn_Slot_1_up: TBitBtn
       AlignWithMargins = True
@@ -617,7 +607,6 @@ object EnigmaDemoForm: TEnigmaDemoForm
         0808080802020202020202020202020202020202020202020202}
       TabOrder = 1
       OnClick = btn_Slot_1_upClick
-      ExplicitLeft = 1
     end
   end
   object pnl_slot_1_in_in: TPanel

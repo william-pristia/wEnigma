@@ -148,12 +148,14 @@ end;
 procedure TEnigmaDemoForm.btn_startClick(Sender : TObject);
 begin
   fActive := True;
+  edt_InText.Enabled:=False;
   pnl_Info.Caption := 'Typing enabled, press any ALPHA key to get chiped result';
 end;
 
 procedure TEnigmaDemoForm.btn_resetClick(Sender : TObject);
 begin
   fActive := False;
+  edt_InText.Enabled:=True;
   pnl_Info.Caption := 'Typing disabled';
   edt_InText.Text := '';
   edt_OutText.Text := '';
