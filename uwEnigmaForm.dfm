@@ -5,7 +5,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
   Caption = 'EnigmaDemoForm'
   ClientHeight = 783
   ClientWidth = 930
-  Color = clBtnFace
+  Color = clWindow
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
@@ -297,7 +297,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     BevelKind = bkSoft
     BevelOuter = bvNone
     Caption = 'A'
-    Color = clWindow
+    Color = 15987699
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -64
@@ -421,7 +421,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     BevelKind = bkFlat
     BevelOuter = bvNone
     Caption = 'A'
-    Color = clWindow
+    Color = 15987699
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -64
@@ -545,7 +545,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     BevelKind = bkFlat
     BevelOuter = bvNone
     Caption = 'A'
-    Color = clWindow
+    Color = 15987699
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -64
@@ -770,7 +770,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     Height = 142
     BevelKind = bkFlat
     BevelOuter = bvNone
-    Color = clWindow
+    Color = 15987699
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -64
@@ -923,7 +923,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     Height = 115
     BevelKind = bkFlat
     BevelOuter = bvNone
-    Color = clWindow
+    Color = 15987699
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -21
