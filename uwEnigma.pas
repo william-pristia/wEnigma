@@ -50,8 +50,11 @@ type
 
   TEnigmaSignalSwitchEvent = procedure(Sender : TEnigmaCipher; const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar) of object;
 
+  TEnigmaComponent = class
+  end;
+
   // base enigma chiper class
-  TEnigmaCipher = class
+  TEnigmaCipher = class(TEnigmaComponent)
   strict private
     fCipherWiringCircuit : TEnigmaCipherWiringCircuit;
     fSignalSwitchEventTrigger : Boolean;
@@ -95,6 +98,7 @@ type
     function FixRotorOffset(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection) : AnsiChar;
   public
     constructor Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard; const aRotorID : TEnigmaRotorIDs); reintroduce; virtual;
+    procedure Configure(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard); overload;
     procedure Configure(const aRotorSlot : TEnigmaRotorSlots; const aRotorNotchPositions : TEnigmaRotorNotchPositions); overload;
     procedure Configure(const aRotorSlot : TEnigmaRotorSlots); overload;
     function SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection = sdIn) : AnsiChar; override;
@@ -380,6 +384,11 @@ end;
 procedure TEnigmaRotor.Configure(const aRotorSlot : TEnigmaRotorSlots);
 begin
   fRotorSlot := aRotorSlot;
+end;
+
+procedure TEnigmaRotor.Configure(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard);
+begin
+  SetWiring(aCipherRingWiring);
 end;
 
 constructor TEnigmaRotor.Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard; const aRotorID : TEnigmaRotorIDs);

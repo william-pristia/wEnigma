@@ -86,6 +86,20 @@ type
     btn_PlubBoardAdd : TBitBtn;
     btn_PlubBoardReset : TBitBtn;
     Label8 : TLabel;
+    cmb_Slot_1 : TComboBox;
+    cmb_Slot_2 : TComboBox;
+    cmb_Slot_3 : TComboBox;
+    cmb_Reflector : TComboBox;
+    cmb_Notch_Slot_1 : TComboBox;
+    cmb_Notch_Slot_2 : TComboBox;
+    Label9 : TLabel;
+    Label10 : TLabel;
+    cmb_Offset_Slot_1: TComboBox;
+    Label11: TLabel;
+    cmb_Offset_Slot_2: TComboBox;
+    Label12: TLabel;
+    cmb_Offset_Slot_3: TComboBox;
+    Label13: TLabel;
     procedure FormCreate(Sender : TObject);
     procedure FormDestroy(Sender : TObject);
     procedure btn_resetClick(Sender : TObject);
@@ -100,6 +114,15 @@ type
     procedure btn_Slot_3_downClick(Sender : TObject);
     procedure btn_PlubBoardResetClick(Sender : TObject);
     procedure btn_PlubBoardAddClick(Sender : TObject);
+    procedure cmb_ReflectorClick(Sender : TObject);
+    procedure cmb_Slot_2Click(Sender : TObject);
+    procedure cmb_Slot_1Click(Sender : TObject);
+    procedure cmb_Notch_Slot_2Click(Sender : TObject);
+    procedure cmb_Notch_Slot_1Click(Sender : TObject);
+    procedure cmb_Offset_Slot_1Click(Sender: TObject);
+    procedure cmb_Offset_Slot_2Click(Sender: TObject);
+    procedure cmb_Offset_Slot_3Click(Sender: TObject);
+    procedure cmb_Slot_3Click(Sender: TObject);
   private
     { Private declarations }
     fActive : Boolean;
@@ -126,6 +149,7 @@ const
   CEnigmaReflectorWiringRB = AnsiString('YRUHQSLDPXNGOKMIEBFZCWVJAT');
   CEnigmaReflectorWiringRC = AnsiString('FVPJIAOYEDRZXWGCTKUQSBNMHL');
   CEnigmaReflectorWiringRBThin = AnsiString('ENKQAUYWJICOPBLMDXZVFTHRGS');
+  CEnigmaReflectorWiringRCThin = AnsiString('RDOBJNTKVEHMLFCWZAXGYIPSUQ');
 
   CEnigmaRotorWiringRI = AnsiString('EKMFLGDQVZNTOWYHXUSPAIBRCJ'); // notch 17
   CEnigmaRotorWiringRII = AnsiString('AJDKSIRUXBLHWTMCQGZNPYFVOE'); // notch 5
@@ -150,10 +174,10 @@ begin
   AddRotor(CEnigmaRotorWiringRI, 1, 1, 1, [17]);
   AddRotor(CEnigmaRotorWiringRII, 2, 2, 1, [5]);
   AddRotor(CEnigmaRotorWiringRIII, 3, 3, 1, [22]);
-  RotorSet[0].Name:='M3 I';
-  RotorSet[1].Name:='M3 II';
-  RotorSet[2].Name:='M3 III';
-  Reflector.Name:='UKW-B';
+  RotorSet[0].Name := 'M3 I';
+  RotorSet[1].Name := 'M3 II';
+  RotorSet[2].Name := 'M3 III';
+  Reflector.Name := 'UKW-B';
   Reflector.Configure(CEnigmaReflectorWiringRB);
   PlugBoard.Configure(CEnigmaRotorWiringFlat);
 end;
@@ -165,12 +189,192 @@ begin
   pnl_Info.Caption := 'Typing enabled, press any ALPHA key to get chiped result';
 end;
 
+procedure TEnigmaDemoForm.cmb_Notch_Slot_1Click(Sender : TObject);
+begin
+  A.Rotor[0].RotorNotchPositions := [cmb_Notch_Slot_1.ItemIndex + 1];
+  ResetGUI;
+end;
+
+procedure TEnigmaDemoForm.cmb_Notch_Slot_2Click(Sender : TObject);
+begin
+  A.Rotor[1].RotorNotchPositions := [cmb_Notch_Slot_2.ItemIndex + 1];
+  ResetGUI;
+end;
+
+procedure TEnigmaDemoForm.cmb_Offset_Slot_1Click(Sender: TObject);
+begin
+  A.Rotor[0].RingOffset := cmb_Offset_Slot_1.ItemIndex;
+  ResetGUI;
+end;
+
+procedure TEnigmaDemoForm.cmb_Offset_Slot_2Click(Sender: TObject);
+begin
+  A.Rotor[1].RingOffset := cmb_Offset_Slot_2.ItemIndex;
+  ResetGUI;
+end;
+
+procedure TEnigmaDemoForm.cmb_Offset_Slot_3Click(Sender: TObject);
+begin
+  A.Rotor[2].RingOffset := cmb_Offset_Slot_3.ItemIndex;
+  ResetGUI;
+end;
+
+procedure TEnigmaDemoForm.cmb_ReflectorClick(Sender : TObject);
+begin
+  case cmb_Reflector.ItemIndex of
+    0 :
+      begin
+        A.Reflector.Configure(CEnigmaReflectorWiringRA);
+        A.Reflector.Name := 'UKW-A';
+      end;
+    1 :
+      begin
+        A.Reflector.Configure(CEnigmaReflectorWiringRB);
+        A.Reflector.Name := 'UKW-B';
+      end;
+    2 :
+      begin
+        A.Reflector.Configure(CEnigmaReflectorWiringRC);
+        A.Reflector.Name := 'UKW-C';
+      end;
+    3 :
+      begin
+        A.Reflector.Configure(CEnigmaReflectorWiringRBThin);
+        A.Reflector.Name := 'UKW-BThin';
+      end;
+    4 :
+      begin
+        A.Reflector.Configure(CEnigmaReflectorWiringRCThin);
+        A.Reflector.Name := 'UKW-CThin';
+      end;
+  end;
+  ResetGUI;
+end;
+
+procedure TEnigmaDemoForm.cmb_Slot_1Click(Sender : TObject);
+begin
+  cmb_Offset_Slot_1.ItemIndex := 0;
+  case cmb_Slot_1.ItemIndex of
+    0 :
+      begin
+        A.Rotor[0].Configure(CEnigmaRotorWiringRI);
+        A.Rotor[0].Name := 'M3 I';
+      end;
+    1 :
+      begin
+        A.Rotor[0].Configure(CEnigmaRotorWiringRII);
+        A.Rotor[0].Name := 'M3 II';
+      end;
+    2 :
+      begin
+        A.Rotor[0].Configure(CEnigmaRotorWiringRIII);
+        A.Rotor[0].Name := 'M3 III';
+      end;
+    3 :
+      begin
+        A.Rotor[0].Configure(CEnigmaRotorWiringRIV);
+        A.Rotor[0].Name := 'M3 IV';
+      end;
+    4 :
+      begin
+        A.Rotor[0].Configure(CEnigmaRotorWiringRV);
+        A.Rotor[0].Name := 'M3 V';
+      end;
+  end;
+  ResetGUI;
+end;
+
+procedure TEnigmaDemoForm.cmb_Slot_2Click(Sender : TObject);
+begin
+  cmb_Offset_Slot_2.ItemIndex := 0;
+  case cmb_Slot_2.ItemIndex of
+    0 :
+      begin
+        A.Rotor[1].Configure(CEnigmaRotorWiringRI);
+        A.Rotor[1].Name := 'M3 I';
+      end;
+    1 :
+      begin
+        A.Rotor[1].Configure(CEnigmaRotorWiringRII);
+        A.Rotor[1].Name := 'M3 II';
+      end;
+    2 :
+      begin
+        A.Rotor[1].Configure(CEnigmaRotorWiringRIII);
+        A.Rotor[1].Name := 'M3 III';
+      end;
+    3 :
+      begin
+        A.Rotor[1].Configure(CEnigmaRotorWiringRIV);
+        A.Rotor[1].Name := 'M3 IV';
+      end;
+    4 :
+      begin
+        A.Rotor[1].Configure(CEnigmaRotorWiringRV);
+        A.Rotor[1].Name := 'M3 V';
+      end;
+  end;
+  ResetGUI;
+end;
+
+procedure TEnigmaDemoForm.cmb_Slot_3Click(Sender: TObject);
+begin
+  cmb_Offset_Slot_3.ItemIndex := 0;
+  case cmb_Slot_2.ItemIndex of
+    0 :
+      begin
+        A.Rotor[2].Configure(CEnigmaRotorWiringRI);
+        A.Rotor[2].Name := 'M3 I';
+      end;
+    1 :
+      begin
+        A.Rotor[2].Configure(CEnigmaRotorWiringRII);
+        A.Rotor[2].Name := 'M3 II';
+      end;
+    2 :
+      begin
+        A.Rotor[2].Configure(CEnigmaRotorWiringRIII);
+        A.Rotor[2].Name := 'M3 III';
+      end;
+    3 :
+      begin
+        A.Rotor[2].Configure(CEnigmaRotorWiringRIV);
+        A.Rotor[2].Name := 'M3 IV';
+      end;
+    4 :
+      begin
+        A.Rotor[2].Configure(CEnigmaRotorWiringRV);
+        A.Rotor[2].Name := 'M3 V';
+      end;
+  end;
+  ResetGUI;
+end;
+
 procedure TEnigmaDemoForm.ConfigureEnigma;
 begin
-  A.ConfigureSlot(1, 1, 1);
+  cmb_Slot_1.ItemIndex := 0;
+  cmb_Slot_2.ItemIndex := 1;
+  cmb_Slot_3.ItemIndex := 2;
+  cmb_Offset_Slot_1.ItemIndex := 0;
+  cmb_Offset_Slot_2.ItemIndex := 0;
+  cmb_Offset_Slot_3.ItemIndex := 0;
+  cmb_Notch_Slot_1.ItemIndex := 16;
+  cmb_Notch_Slot_2.ItemIndex := 4;
+  cmb_Reflector.ItemIndex := 1;
+  A.Rotor[0].RotorCurrentPosition:=1;
+  A.Rotor[0].RotorNotchPositions:=[16];
+  A.Rotor[0].RingOffset:=0;
+  A.Rotor[1].RotorCurrentPosition:=1;
+  A.Rotor[1].RotorNotchPositions:=[5];
+  A.Rotor[1].RingOffset:=0;
+  A.Rotor[2].RotorCurrentPosition:=1;
+  A.Rotor[2].RotorNotchPositions:=[22];
+  A.Rotor[2].RingOffset:=0;
+
+  {A.ConfigureSlot(1, 1, 1);
   A.ConfigureSlot(2, 2, 1);
   A.ConfigureSlot(3, 3, 1);
-  // A.ConfigurePlugBoard('MBCDEIGHFJKLAVOSQRPUTNZXYW');
+  A.ConfigurePlugBoard('MBCDEIGHFJKLAVOSQRPUTNZXYW');}
   ResetGUI;
 end;
 
@@ -179,7 +383,6 @@ begin
   fActive := False;
   edt_InText.Enabled := True;
   pnl_Info.Caption := 'Typing disabled';
-  edt_InText.Text := '';
   edt_OutText.Text := '';
   ConfigureEnigma;
 end;
@@ -240,10 +443,10 @@ begin
   pnl_slot_1.Caption := string(AnsiChar(64 + A.RotorSet[0].RotorCurrentPosition));
   pnl_Slot_2.Caption := string(AnsiChar(64 + A.RotorSet[1].RotorCurrentPosition));
   pnl_Slot_3.Caption := string(AnsiChar(64 + A.RotorSet[2].RotorCurrentPosition));
-  Label1.Caption:=A.RotorSet[0].Name;
-  Label2.Caption:=A.RotorSet[1].Name;
-  Label3.Caption:=A.RotorSet[2].Name;
-  Label4.Caption:=A.Reflector.Name;
+  Label1.Caption := A.RotorSet[0].Name;
+  Label2.Caption := A.RotorSet[1].Name;
+  Label3.Caption := A.RotorSet[2].Name;
+  Label4.Caption := A.Reflector.Name;
 end;
 
 procedure TEnigmaDemoForm.btn_Slot_3_upClick(Sender : TObject);
