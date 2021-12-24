@@ -3,10 +3,7 @@ unit uwEnigma;
 interface
 
 uses
-  Winapi.Windows,
-  Winapi.Messages,
   System.SysUtils,
-  System.Variants,
   System.Generics.Collections,
   System.Classes;
 
