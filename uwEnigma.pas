@@ -17,14 +17,15 @@ const
   CEnigmaMaxRotors = 5;
 
 type
+  TEnigmaAlphabet = 0 .. CEnigmaChars;
   TEnigmaSignalDirection = (sdIn, sdOut);
 
   TEnigmaRotorIDs = 0 .. CEnigmaMaxRotors;
   TEnigmaRotorSlots = 0 .. CEnigmaMaxRotors; // 0 Rotor slot unused
 
-  TEnigmaRingOffset = 0 .. CEnigmaChars; // 0 no offset
-  TEnigmaRotorPosition = 0 .. CEnigmaChars; // 0 Rotor not in start position
-  TEnigmaRotorNotchPosition = 0 .. CEnigmaChars; // 0 turnover disabled
+  TEnigmaRingOffset = TEnigmaAlphabet; // 0 no offset
+  TEnigmaRotorPosition = TEnigmaAlphabet; // 0 Rotor not in start position
+  TEnigmaRotorNotchPosition = TEnigmaAlphabet; // 0 turnover disabled
   TEnigmaRotorNotchPositions = set of TEnigmaRotorNotchPosition;
 
   TEnigmaKeyBoard = string[CEnigmaChars];
@@ -36,94 +37,99 @@ type
   // simulate interlnal wiring
   TEnigmaCipherWiringCircuit = record
   const
-    LeftSide : TEnigmaInPhysicalKeyBoard = CEnigmaRotorWiringFlat;
+    LeftSide: TEnigmaInPhysicalKeyBoard = CEnigmaRotorWiringFlat;
   var
-    RightSide : TEnigmaOutVirtualKeyBoard;
-    class operator Initialize(out Dest : TEnigmaCipherWiringCircuit);
+    RightSide: TEnigmaOutVirtualKeyBoard;
+    class operator Initialize(out Dest: TEnigmaCipherWiringCircuit);
   end;
 
   TEnigmaCipher = class;
   TEnigmaMachine = class;
 
-  TEnigmaSignalSwitchEvent = procedure(Sender : TEnigmaCipher; const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar) of object;
+  TEnigmaSignalSwitchEvent = procedure(Sender: TEnigmaCipher; const SignalDirection: TEnigmaSignalDirection; const aInChar, aOutChar: AnsiChar) of object;
 
   TEnigmaComponent = class
+  protected
+    function IsAlpaChar(const aChar: AnsiChar): Boolean; inline;
+    function IsEnigmaIndex(const aIndex: Integer): Boolean; inline;
+    function AlphaCharToEnigmaIndex(const aChar: AnsiChar): TEnigmaAlphabet; inline;
+    function EnigmaIndexToAlphaChar(const aIndex: TEnigmaAlphabet): AnsiChar; inline;
   end;
 
   // base enigma chiper class
   TEnigmaCipher = class(TEnigmaComponent)
   strict private
-    fCipherWiringCircuit : TEnigmaCipherWiringCircuit;
-    fSignalSwitchEventTrigger : Boolean;
-    fOnSignalSwitch : TEnigmaSignalSwitchEvent;
-    function GetHumanizedCipherWiringCircuit : THumanizedCipherWiringCircuit;
+    fCipherWiringCircuit: TEnigmaCipherWiringCircuit;
+    fSignalSwitchEventTrigger: Boolean;
+    fOnSignalSwitch: TEnigmaSignalSwitchEvent;
+    function GetHumanizedCipherWiringCircuit: THumanizedCipherWiringCircuit;
   protected
-    procedure SetSingleConnection(const aLeft, aRight : AnsiChar); dynamic;
-    procedure SetWiring(const aRightSideConfiguration : TEnigmaOutVirtualKeyBoard); dynamic;
-    procedure DoSignalSwitch(const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar); virtual;
+    procedure SetSingleConnection(const aLeft, aRight: AnsiChar); dynamic;
+    procedure SetWiring(const aRightSideConfiguration: TEnigmaOutVirtualKeyBoard); dynamic;
+    procedure DoSignalSwitch(const SignalDirection: TEnigmaSignalDirection; const aInChar, aOutChar: AnsiChar); virtual;
   public
-    constructor Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard); virtual;
-    function SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection = sdIn) : AnsiChar; dynamic;
-    property SignalSwitchEventTrigger : Boolean read fSignalSwitchEventTrigger write fSignalSwitchEventTrigger;
-    property CipherWiringCircuit : TEnigmaCipherWiringCircuit read fCipherWiringCircuit;
-    property HumanizedCipherWiringCircuit : THumanizedCipherWiringCircuit read GetHumanizedCipherWiringCircuit;
-    property OnSignalSwitch : TEnigmaSignalSwitchEvent read fOnSignalSwitch write fOnSignalSwitch;
+    constructor Create(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard); virtual;
+    function SignalSwitch(const aChar: AnsiChar; const SignalDirection: TEnigmaSignalDirection = sdIn): AnsiChar; dynamic;
+    property SignalSwitchEventTrigger: Boolean read fSignalSwitchEventTrigger write fSignalSwitchEventTrigger;
+    property CipherWiringCircuit: TEnigmaCipherWiringCircuit read fCipherWiringCircuit;
+    property HumanizedCipherWiringCircuit: THumanizedCipherWiringCircuit read GetHumanizedCipherWiringCircuit;
+    property OnSignalSwitch: TEnigmaSignalSwitchEvent read fOnSignalSwitch write fOnSignalSwitch;
   end;
 
   // internal rotor Ring
   TEnigmaCipherRing = class(TEnigmaCipher)
   strict private
-    fName : String;
-    fRingOffset : TEnigmaRingOffset;
+    fName: string;
+    fRingOffset: TEnigmaRingOffset;
   protected
-    function FixWiringOffset(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection) : AnsiChar;
-    property RingOffset : TEnigmaRingOffset read fRingOffset write fRingOffset;
-    property Name : String read fName write fName;
+    function FixWiringOffset(const aChar: AnsiChar; const SignalDirection: TEnigmaSignalDirection): AnsiChar;
+    property RingOffset: TEnigmaRingOffset read fRingOffset write fRingOffset;
+    property name: string read fName write fName;
   public
-    constructor Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard); override;
-    function SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection = sdIn) : AnsiChar; override;
+    constructor Create(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard); override;
+    function SignalSwitch(const aChar: AnsiChar; const SignalDirection: TEnigmaSignalDirection = sdIn): AnsiChar; override;
   end;
 
   // rotor
   TEnigmaRotor = class(TEnigmaCipherRing)
   strict private
-    fRotorID : TEnigmaRotorIDs;
-    fRotorSlot : TEnigmaRotorSlots;
-    fRotorNotchPositions : TEnigmaRotorNotchPositions;
-    fRotorCurrentPosition : TEnigmaRotorPosition;
+    fRotorID: TEnigmaRotorIDs;
+    fRotorSlot: TEnigmaRotorSlots;
+    fRotorNotchPositions: TEnigmaRotorNotchPositions;
+    fRotorCurrentPosition: TEnigmaRotorPosition;
   protected
-    function FixRotorOffset(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection) : AnsiChar;
+    function FixRotorOffset(const aChar: AnsiChar; const SignalDirection: TEnigmaSignalDirection): AnsiChar;
   public
-    constructor Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard; const aRotorID : TEnigmaRotorIDs); reintroduce; virtual;
-    procedure Configure(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard); overload;
-    procedure Configure(const aRotorSlot : TEnigmaRotorSlots; const aRotorNotchPositions : TEnigmaRotorNotchPositions); overload;
-    procedure Configure(const aRotorSlot : TEnigmaRotorSlots); overload;
-    function SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection = sdIn) : AnsiChar; override;
+    constructor Create(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard; const aRotorID: TEnigmaRotorIDs); reintroduce; virtual;
+    procedure Configure(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard); overload;
+    procedure Configure(const aRotorSlot: TEnigmaRotorSlots; const aRotorNotchPositions: TEnigmaRotorNotchPositions); overload;
+    procedure Configure(const aRotorSlot: TEnigmaRotorSlots); overload;
+    function SignalSwitch(const aChar: AnsiChar; const SignalDirection: TEnigmaSignalDirection = sdIn): AnsiChar; override;
     procedure IncRotorCurrentPosition;
     procedure DecRotorCurrentPosition;
 
-    property RotorID : TEnigmaRotorIDs read fRotorID;
-    property RotorNotchPositions : TEnigmaRotorNotchPositions read fRotorNotchPositions write fRotorNotchPositions;
-    property RotorSlot : TEnigmaRotorSlots read fRotorSlot write fRotorSlot;
-    property RotorCurrentPosition : TEnigmaRotorPosition read fRotorCurrentPosition write fRotorCurrentPosition;
+    property RotorID: TEnigmaRotorIDs read fRotorID;
+    property RotorNotchPositions: TEnigmaRotorNotchPositions read fRotorNotchPositions write fRotorNotchPositions;
+    property RotorSlot: TEnigmaRotorSlots read fRotorSlot write fRotorSlot;
+    property RotorCurrentPosition: TEnigmaRotorPosition read fRotorCurrentPosition write fRotorCurrentPosition;
 
-    property Name;
+    property name;
     property RingOffset;
   end;
 
   // reflector
   TEnigmaReflector = class(TEnigmaCipherRing)
-    procedure Configure(aReflectorWiring : TEnigmaOutVirtualKeyBoard);
+    procedure Configure(aReflectorWiring: TEnigmaOutVirtualKeyBoard);
 
-    property Name;
+    property name;
     property RingOffset;
   end;
 
   // plugboard
   TEnigmaPlugBoard = class(TEnigmaCipher)
   public
-    procedure Configure(aPlugBoardWiring : TEnigmaOutVirtualKeyBoard);
-    procedure Plug(const aLeft, aRight : AnsiChar);
+    procedure Configure(aPlugBoardWiring: TEnigmaOutVirtualKeyBoard);
+    procedure Plug(const aLeft, aRight: AnsiChar);
   end;
 
   TEnigmaRotorSet = array [1 .. 5] of TEnigmaRotor;
@@ -131,44 +137,44 @@ type
   TEnigmaRotors = class(TList<TEnigmaRotor>)
   end;
 
-  TEnigmaMachineChipedCharEvent = procedure(Sender : TEnigmaMachine; const aInChar, aOutChar : AnsiChar) of object;
+  TEnigmaMachineChipedCharEvent = procedure(Sender: TEnigmaMachine; const aInChar, aOutChar: AnsiChar) of object;
 
   TEnigmaMachine = class
   strict private
-    fPlugBoard : TEnigmaPlugBoard;
-    fReflector : TEnigmaReflector;
-    fRotorSet : TEnigmaRotors;
-    fModel : string;
-    fOnEnigmaMachineChipedChar : TEnigmaMachineChipedCharEvent;
-    function GetRotor(aRotorIndex : Integer) : TEnigmaRotor;
-    procedure SetRotor(aRotorIndex : Integer; const Value : TEnigmaRotor);
+    fPlugBoard: TEnigmaPlugBoard;
+    fReflector: TEnigmaReflector;
+    fRotorSet: TEnigmaRotors;
+    fModel: string;
+    fOnEnigmaMachineChipedChar: TEnigmaMachineChipedCharEvent;
+    function GetRotor(aRotorIndex: Integer): TEnigmaRotor;
+    procedure SetRotor(aRotorIndex: Integer; const Value: TEnigmaRotor);
   protected
-    procedure DoEnigmaMachineChipedChar(const aInChar, aOutChar : AnsiChar); virtual;
+    procedure DoEnigmaMachineChipedChar(const aInChar, aOutChar: AnsiChar); virtual;
   public
     constructor Create; virtual;
     destructor Destroy; override;
 
-    function RotorIndexFromRotorSlot(aSlot : TEnigmaRotorSlots; var aRotorIndex : Integer) : Boolean;
-    function RotorIndexFromRotorID(aRotorID : TEnigmaRotorIDs; var aRotorIndex : Integer) : Boolean;
-    procedure IncRotorCurrentPosition(const aRotorSlot : TEnigmaRotorSlots);
-    procedure DecRotorCurrentPosition(const aRotorSlot : TEnigmaRotorSlots);
+    function RotorIndexFromRotorSlot(aSlot: TEnigmaRotorSlots; var aRotorIndex: Integer): Boolean;
+    function RotorIndexFromRotorID(aRotorID: TEnigmaRotorIDs; var aRotorIndex: Integer): Boolean;
+    procedure IncRotorCurrentPosition(const aRotorSlot: TEnigmaRotorSlots);
+    procedure DecRotorCurrentPosition(const aRotorSlot: TEnigmaRotorSlots);
 
-    procedure AddRotor(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard; const aSlot : TEnigmaRotorSlots; const aRotorID : TEnigmaRotorIDs; const aRingOffset : TEnigmaRingOffset; const aRotorNotchPositions : TEnigmaRotorNotchPositions; const aRotorCurrentPosition : TEnigmaRotorPosition); overload;
-    procedure AddRotor(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard; const aSlot : TEnigmaRotorSlots; const aRotorID : TEnigmaRotorIDs; const aRingOffset : TEnigmaRingOffset; const aRotorNotchPositions : TEnigmaRotorNotchPositions); overload;
+    procedure AddRotor(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard; const aSlot: TEnigmaRotorSlots; const aRotorID: TEnigmaRotorIDs; const aRingOffset: TEnigmaRingOffset; const aRotorNotchPositions: TEnigmaRotorNotchPositions; const aRotorCurrentPosition: TEnigmaRotorPosition); overload;
+    procedure AddRotor(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard; const aSlot: TEnigmaRotorSlots; const aRotorID: TEnigmaRotorIDs; const aRingOffset: TEnigmaRingOffset; const aRotorNotchPositions: TEnigmaRotorNotchPositions); overload;
 
-    procedure ConfigureSlot(const aSlot : TEnigmaRotorSlots; const aRotorID : TEnigmaRotorIDs; const aRotorNotchPositions : TEnigmaRotorNotchPositions; const aRotorCurrentPosition : TEnigmaRotorPosition); overload;
-    procedure ConfigureSlot(const aSlot : TEnigmaRotorSlots; const aRotorID : TEnigmaRotorIDs; const aRotorCurrentPosition : TEnigmaRotorPosition); overload;
-    procedure ConfigureReflector(const aReflectorWiring : TEnigmaOutVirtualKeyBoard); overload;
-    procedure ConfigurePlugBoard(aPlugBoardWiring : TEnigmaOutVirtualKeyBoard);
+    procedure ConfigureSlot(const aSlot: TEnigmaRotorSlots; const aRotorID: TEnigmaRotorIDs; const aRotorNotchPositions: TEnigmaRotorNotchPositions; const aRotorCurrentPosition: TEnigmaRotorPosition); overload;
+    procedure ConfigureSlot(const aSlot: TEnigmaRotorSlots; const aRotorID: TEnigmaRotorIDs; const aRotorCurrentPosition: TEnigmaRotorPosition); overload;
+    procedure ConfigureReflector(const aReflectorWiring: TEnigmaOutVirtualKeyBoard); overload;
+    procedure ConfigurePlugBoard(aPlugBoardWiring: TEnigmaOutVirtualKeyBoard);
 
-    function GetCiphedChar(aChar : AnsiChar) : AnsiChar;
+    function GetCiphedChar(aChar: AnsiChar): AnsiChar;
 
-    property Model : string read fModel write fModel;
-    property PlugBoard : TEnigmaPlugBoard read fPlugBoard write fPlugBoard;
-    property Reflector : TEnigmaReflector read fReflector write fReflector;
-    property RotorSet : TEnigmaRotors read fRotorSet write fRotorSet;
-    property Rotor[aRotorIndex : Integer] : TEnigmaRotor read GetRotor write SetRotor;
-    property OnEnigmaMachineChipedChar : TEnigmaMachineChipedCharEvent read fOnEnigmaMachineChipedChar write fOnEnigmaMachineChipedChar;
+    property Model: string read fModel write fModel;
+    property PlugBoard: TEnigmaPlugBoard read fPlugBoard write fPlugBoard;
+    property Reflector: TEnigmaReflector read fReflector write fReflector;
+    property RotorSet: TEnigmaRotors read fRotorSet write fRotorSet;
+    property Rotor[aRotorIndex: Integer]: TEnigmaRotor read GetRotor write SetRotor;
+    property OnEnigmaMachineChipedChar: TEnigmaMachineChipedCharEvent read fOnEnigmaMachineChipedChar write fOnEnigmaMachineChipedChar;
   end;
 
 implementation
@@ -192,18 +198,49 @@ const
   CEnigmaRotorWiringRVII = AnsiString('NZJHGRCXMYSWBOUFAIVLPEKQDT');
   CEnigmaRotorWiringRVIII = AnsiString('FKQHTLXOCBJSPDZRAMEWNIUYGV');
 
-class operator TEnigmaCipherWiringCircuit.Initialize(out Dest : TEnigmaCipherWiringCircuit);
+function TEnigmaComponent.AlphaCharToEnigmaIndex(const aChar: AnsiChar): TEnigmaAlphabet;
+var
+  lOrdChar: Integer;
+begin
+  Result := 0;
+  lOrdChar := Ord(aChar);
+  if lOrdChar in [65 .. 90] then
+  begin
+    Result := (lOrdChar - 64);
+  end;
+end;
+
+function TEnigmaComponent.EnigmaIndexToAlphaChar(const aIndex: TEnigmaAlphabet): AnsiChar;
+begin
+  Result := #0;
+  if aIndex > 0 then
+  begin
+    Result := AnsiChar(64 + aIndex);
+  end;
+end;
+
+function TEnigmaComponent.IsAlpaChar(const aChar: AnsiChar): Boolean;
+begin
+  Result := (Ord(aChar) in [65 .. 90]);
+end;
+
+function TEnigmaComponent.IsEnigmaIndex(const aIndex: Integer): Boolean;
+begin
+  Result := aIndex in [1 .. CEnigmaChars];
+end;
+
+class operator TEnigmaCipherWiringCircuit.Initialize(out Dest: TEnigmaCipherWiringCircuit);
 begin
   Dest.RightSide := CEnigmaRotorWiringFlat;
 end;
 
-constructor TEnigmaCipher.Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard);
+constructor TEnigmaCipher.Create(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard);
 begin
   fSignalSwitchEventTrigger := True;
   SetWiring(aCipherRingWiring);
 end;
 
-procedure TEnigmaCipher.DoSignalSwitch(const SignalDirection : TEnigmaSignalDirection; const aInChar, aOutChar : AnsiChar);
+procedure TEnigmaCipher.DoSignalSwitch(const SignalDirection: TEnigmaSignalDirection; const aInChar, aOutChar: AnsiChar);
 begin
   if fSignalSwitchEventTrigger then
   begin
@@ -214,7 +251,7 @@ begin
   end;
 end;
 
-function TEnigmaCipher.GetHumanizedCipherWiringCircuit : THumanizedCipherWiringCircuit;
+function TEnigmaCipher.GetHumanizedCipherWiringCircuit: THumanizedCipherWiringCircuit;
 begin
   Result := '';
   for var I := 1 to high(TEnigmaKeyBoard) do
@@ -237,15 +274,15 @@ begin
   end;
 end;
 
-procedure TEnigmaCipher.SetSingleConnection(const aLeft, aRight : AnsiChar);
+procedure TEnigmaCipher.SetSingleConnection(const aLeft, aRight: AnsiChar);
 begin
-  if Ord(aLeft) in [65 .. 90] then
+  if IsAlpaChar(aLeft) then
   begin
-    fCipherWiringCircuit.RightSide[Ord(aLeft) - 64] := aRight;
+    fCipherWiringCircuit.RightSide[AlphaCharToEnigmaIndex(aLeft)] := aRight;
   end;
 end;
 
-procedure TEnigmaCipher.SetWiring(const aRightSideConfiguration : TEnigmaOutVirtualKeyBoard);
+procedure TEnigmaCipher.SetWiring(const aRightSideConfiguration: TEnigmaOutVirtualKeyBoard);
 begin
   if aRightSideConfiguration = '' then
   begin
@@ -263,18 +300,18 @@ begin
   end;
 end;
 
-function TEnigmaCipher.SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection) : AnsiChar;
+function TEnigmaCipher.SignalSwitch(const aChar: AnsiChar; const SignalDirection: TEnigmaSignalDirection): AnsiChar;
 var
-  lCharIndex : Integer;
-  lChar : AnsiChar;
-  lFound : Boolean;
+  lCharIndex: Integer;
+  lChar: AnsiChar;
+  lFound: Boolean;
 begin
   lChar := aChar;
-  lCharIndex := (Ord(lChar) - 64);
-  if lCharIndex in [1 .. CEnigmaChars] then
+  lCharIndex := AlphaCharToEnigmaIndex(lChar);
+  if IsEnigmaIndex(lCharIndex) then
   begin
     case SignalDirection of
-      sdIn :
+      sdIn:
         begin
           if fCipherWiringCircuit.LeftSide[lCharIndex] = lChar then
           begin
@@ -285,7 +322,7 @@ begin
             Exception.Create('Invalid Char.');
           end;
         end;
-      sdOut :
+      sdOut:
         begin
           lFound := False;
           for lCharIndex := 1 to CEnigmaChars do
@@ -308,22 +345,22 @@ begin
   Result := lChar;
 end;
 
-constructor TEnigmaCipherRing.Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard);
+constructor TEnigmaCipherRing.Create(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard);
 begin
   inherited Create(aCipherRingWiring);
   fName := '';
   fRingOffset := 0;
 end;
 
-function TEnigmaCipherRing.FixWiringOffset(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection) : AnsiChar;
+function TEnigmaCipherRing.FixWiringOffset(const aChar: AnsiChar; const SignalDirection: TEnigmaSignalDirection): AnsiChar;
 var
-  lCharIndex : Integer;
-  lChar : AnsiChar;
+  lCharIndex: Integer;
+  lChar: AnsiChar;
 begin
   lChar := UpCase(aChar);
-  lCharIndex := (Ord(lChar) - 64);
+  lCharIndex := AlphaCharToEnigmaIndex(lChar);
   case SignalDirection of
-    sdIn :
+    sdIn:
       begin
         if (fRingOffset <> 0) then
         begin
@@ -334,7 +371,7 @@ begin
           end;
         end;
       end;
-    sdOut :
+    sdOut:
       begin
         if (fRingOffset <> 0) then
         begin
@@ -346,14 +383,14 @@ begin
         end;
       end;
   end;
-  lChar := AnsiChar(64 + lCharIndex);
+  lChar := EnigmaIndexToAlphaChar(lCharIndex);
   Result := lChar;
 end;
 
-function TEnigmaCipherRing.SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection) : AnsiChar;
+function TEnigmaCipherRing.SignalSwitch(const aChar: AnsiChar; const SignalDirection: TEnigmaSignalDirection): AnsiChar;
 var
-  lChar : AnsiChar;
-  lCanChangeSwitchTrigger : Boolean;
+  lChar: AnsiChar;
+  lCanChangeSwitchTrigger: Boolean;
 begin
   lCanChangeSwitchTrigger := False;
   if SignalSwitchEventTrigger then
@@ -372,13 +409,13 @@ begin
   Result := lChar;
 end;
 
-procedure TEnigmaRotor.Configure(const aRotorSlot : TEnigmaRotorSlots; const aRotorNotchPositions : TEnigmaRotorNotchPositions);
+procedure TEnigmaRotor.Configure(const aRotorSlot: TEnigmaRotorSlots; const aRotorNotchPositions: TEnigmaRotorNotchPositions);
 begin
   fRotorSlot := aRotorSlot;
   fRotorNotchPositions := aRotorNotchPositions;
 end;
 
-procedure TEnigmaRotor.Configure(const aRotorSlot : TEnigmaRotorSlots);
+procedure TEnigmaRotor.Configure(const aRotorSlot: TEnigmaRotorSlots);
 begin
   fRotorSlot := aRotorSlot;
 end;
@@ -388,7 +425,7 @@ begin
   SetWiring(aCipherRingWiring);
 end;
 
-constructor TEnigmaRotor.Create(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard; const aRotorID : TEnigmaRotorIDs);
+constructor TEnigmaRotor.Create(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard; const aRotorID: TEnigmaRotorIDs);
 begin
   inherited Create(aCipherRingWiring);
   fRotorID := aRotorID;
@@ -409,15 +446,15 @@ begin
   end;
 end;
 
-function TEnigmaRotor.FixRotorOffset(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection) : AnsiChar;
+function TEnigmaRotor.FixRotorOffset(const aChar: AnsiChar; const SignalDirection: TEnigmaSignalDirection): AnsiChar;
 var
-  lCharIndex : Integer;
-  lChar : AnsiChar;
+  lCharIndex: Integer;
+  lChar: AnsiChar;
 begin
   lChar := UpCase(aChar);
-  lCharIndex := (Ord(lChar) - 64);
+  lCharIndex := AlphaCharToEnigmaIndex(lChar);
   case SignalDirection of
-    sdIn :
+    sdIn:
       begin
         lCharIndex := lCharIndex + (fRotorCurrentPosition - 1);
         if lCharIndex > high(TEnigmaRotorPosition) then
@@ -425,7 +462,7 @@ begin
           lCharIndex := lCharIndex - high(TEnigmaRotorPosition);
         end;
       end;
-    sdOut :
+    sdOut:
       begin
         lCharIndex := lCharIndex - (fRotorCurrentPosition - 1);
         if lCharIndex < 1 then
@@ -434,7 +471,7 @@ begin
         end;
       end;
   end;
-  lChar := AnsiChar(64 + (lCharIndex));
+  lChar := EnigmaIndexToAlphaChar(lCharIndex);
   Result := lChar;
 end;
 
@@ -450,10 +487,10 @@ begin
   end;
 end;
 
-function TEnigmaRotor.SignalSwitch(const aChar : AnsiChar; const SignalDirection : TEnigmaSignalDirection) : AnsiChar;
+function TEnigmaRotor.SignalSwitch(const aChar: AnsiChar; const SignalDirection: TEnigmaSignalDirection): AnsiChar;
 var
-  lChar : AnsiChar;
-  lCanChangeSwitchTrigger : Boolean;
+  lChar: AnsiChar;
+  lCanChangeSwitchTrigger: Boolean;
 begin
   lCanChangeSwitchTrigger := False;
   if SignalSwitchEventTrigger then
@@ -473,35 +510,35 @@ begin
   Result := lChar;
 end;
 
-procedure TEnigmaReflector.Configure(aReflectorWiring : TEnigmaOutVirtualKeyBoard);
+procedure TEnigmaReflector.Configure(aReflectorWiring: TEnigmaOutVirtualKeyBoard);
 begin
   SetWiring(aReflectorWiring);
 end;
 
-procedure TEnigmaPlugBoard.Configure(aPlugBoardWiring : TEnigmaOutVirtualKeyBoard);
+procedure TEnigmaPlugBoard.Configure(aPlugBoardWiring: TEnigmaOutVirtualKeyBoard);
 begin
   SetWiring(aPlugBoardWiring);
 end;
 
-procedure TEnigmaPlugBoard.Plug(const aLeft, aRight : AnsiChar);
+procedure TEnigmaPlugBoard.Plug(const aLeft, aRight: AnsiChar);
 begin
   SetSingleConnection(aLeft, aRight);
   SetSingleConnection(aRight, aLeft);
 end;
 
-procedure TEnigmaMachine.ConfigurePlugBoard(aPlugBoardWiring : TEnigmaOutVirtualKeyBoard);
+procedure TEnigmaMachine.ConfigurePlugBoard(aPlugBoardWiring: TEnigmaOutVirtualKeyBoard);
 begin
   fPlugBoard.Configure(aPlugBoardWiring);
 end;
 
-procedure TEnigmaMachine.ConfigureReflector(const aReflectorWiring : TEnigmaOutVirtualKeyBoard);
+procedure TEnigmaMachine.ConfigureReflector(const aReflectorWiring: TEnigmaOutVirtualKeyBoard);
 begin
   fReflector.Configure(aReflectorWiring);
 end;
 
-procedure TEnigmaMachine.ConfigureSlot(const aSlot : TEnigmaRotorSlots; const aRotorID : TEnigmaRotorIDs; const aRotorCurrentPosition : TEnigmaRotorPosition);
+procedure TEnigmaMachine.ConfigureSlot(const aSlot: TEnigmaRotorSlots; const aRotorID: TEnigmaRotorIDs; const aRotorCurrentPosition: TEnigmaRotorPosition);
 var
-  lRotorIndex : Integer;
+  lRotorIndex: Integer;
 begin
   if RotorIndexFromRotorID(aRotorID, lRotorIndex) then
   begin
@@ -510,9 +547,9 @@ begin
   end;
 end;
 
-procedure TEnigmaMachine.ConfigureSlot(const aSlot : TEnigmaRotorSlots; const aRotorID : TEnigmaRotorIDs; const aRotorNotchPositions : TEnigmaRotorNotchPositions; const aRotorCurrentPosition : TEnigmaRotorPosition);
+procedure TEnigmaMachine.ConfigureSlot(const aSlot: TEnigmaRotorSlots; const aRotorID: TEnigmaRotorIDs; const aRotorNotchPositions: TEnigmaRotorNotchPositions; const aRotorCurrentPosition: TEnigmaRotorPosition);
 var
-  lRotorIndex : Integer;
+  lRotorIndex: Integer;
 begin
   if RotorIndexFromRotorID(aRotorID, lRotorIndex) then
   begin
@@ -529,10 +566,10 @@ begin
   fPlugBoard := TEnigmaPlugBoard.Create(CEnigmaRotorWiringFlat);
 end;
 
-procedure TEnigmaMachine.DecRotorCurrentPosition(const aRotorSlot : TEnigmaRotorSlots);
+procedure TEnigmaMachine.DecRotorCurrentPosition(const aRotorSlot: TEnigmaRotorSlots);
 var
-  lRotorIndex : Integer;
-  lRotor : TEnigmaRotor;
+  lRotorIndex: Integer;
+  lRotor: TEnigmaRotor;
 begin
   if RotorIndexFromRotorSlot(aRotorSlot, lRotorIndex) then
   begin
@@ -543,7 +580,7 @@ end;
 
 destructor TEnigmaMachine.Destroy;
 begin
-  for var I : Integer := 0 to Pred(fRotorSet.Count) do
+  for var I: Integer := 0 to Pred(fRotorSet.Count) do
   begin
     fRotorSet[I].Free;
   end;
@@ -553,7 +590,7 @@ begin
   inherited;
 end;
 
-procedure TEnigmaMachine.DoEnigmaMachineChipedChar(const aInChar, aOutChar : AnsiChar);
+procedure TEnigmaMachine.DoEnigmaMachineChipedChar(const aInChar, aOutChar: AnsiChar);
 begin
   if Assigned(fOnEnigmaMachineChipedChar) then
   begin
@@ -561,14 +598,14 @@ begin
   end;
 end;
 
-procedure TEnigmaMachine.AddRotor(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard; const aSlot : TEnigmaRotorSlots; const aRotorID : TEnigmaRotorIDs; const aRingOffset : TEnigmaRingOffset; const aRotorNotchPositions : TEnigmaRotorNotchPositions);
+procedure TEnigmaMachine.AddRotor(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard; const aSlot: TEnigmaRotorSlots; const aRotorID: TEnigmaRotorIDs; const aRingOffset: TEnigmaRingOffset; const aRotorNotchPositions: TEnigmaRotorNotchPositions);
 begin
   AddRotor(aCipherRingWiring, aSlot, aRotorID, aRingOffset, aRotorNotchPositions, 0);
 end;
 
-procedure TEnigmaMachine.AddRotor(const aCipherRingWiring : TEnigmaOutVirtualKeyBoard; const aSlot : TEnigmaRotorSlots; const aRotorID : TEnigmaRotorIDs; const aRingOffset : TEnigmaRingOffset; const aRotorNotchPositions : TEnigmaRotorNotchPositions; const aRotorCurrentPosition : TEnigmaRotorPosition);
+procedure TEnigmaMachine.AddRotor(const aCipherRingWiring: TEnigmaOutVirtualKeyBoard; const aSlot: TEnigmaRotorSlots; const aRotorID: TEnigmaRotorIDs; const aRingOffset: TEnigmaRingOffset; const aRotorNotchPositions: TEnigmaRotorNotchPositions; const aRotorCurrentPosition: TEnigmaRotorPosition);
 var
-  lRotor : TEnigmaRotor;
+  lRotor: TEnigmaRotor;
 begin
   lRotor := TEnigmaRotor.Create(aCipherRingWiring, aRotorID);
   lRotor.Configure(aSlot, aRotorNotchPositions);
@@ -577,10 +614,10 @@ begin
   fRotorSet.Add(lRotor);
 end;
 
-procedure TEnigmaMachine.IncRotorCurrentPosition(const aRotorSlot : TEnigmaRotorSlots);
+procedure TEnigmaMachine.IncRotorCurrentPosition(const aRotorSlot: TEnigmaRotorSlots);
 var
-  lRotorIndex : Integer;
-  lRotor : TEnigmaRotor;
+  lRotorIndex: Integer;
+  lRotor: TEnigmaRotor;
 begin
   if RotorIndexFromRotorSlot(aRotorSlot, lRotorIndex) then
   begin
@@ -596,11 +633,11 @@ begin
   end;
 end;
 
-function TEnigmaMachine.GetCiphedChar(aChar : AnsiChar) : AnsiChar;
+function TEnigmaMachine.GetCiphedChar(aChar: AnsiChar): AnsiChar;
 var
-  lSlot : TEnigmaRotorSlots;
-  lRotorIndex : Integer;
-  C : AnsiChar;
+  lSlot: TEnigmaRotorSlots;
+  lRotorIndex: Integer;
+  C: AnsiChar;
 begin
   IncRotorCurrentPosition(1);
   C := aChar;
@@ -631,14 +668,14 @@ begin
   // Rollup Rotors
 end;
 
-function TEnigmaMachine.GetRotor(aRotorIndex : Integer) : TEnigmaRotor;
+function TEnigmaMachine.GetRotor(aRotorIndex: Integer): TEnigmaRotor;
 begin
   Result := fRotorSet[aRotorIndex];
 end;
 
-function TEnigmaMachine.RotorIndexFromRotorID(aRotorID : TEnigmaRotorIDs; var aRotorIndex : Integer) : Boolean;
+function TEnigmaMachine.RotorIndexFromRotorID(aRotorID: TEnigmaRotorIDs; var aRotorIndex: Integer): Boolean;
 var
-  lRotorIndex : Integer;
+  lRotorIndex: Integer;
 begin
   Result := False;
   aRotorIndex := -1;
@@ -656,9 +693,9 @@ begin
   end;
 end;
 
-function TEnigmaMachine.RotorIndexFromRotorSlot(aSlot : TEnigmaRotorSlots; var aRotorIndex : Integer) : Boolean;
+function TEnigmaMachine.RotorIndexFromRotorSlot(aSlot: TEnigmaRotorSlots; var aRotorIndex: Integer): Boolean;
 var
-  lRotorIndex : Integer;
+  lRotorIndex: Integer;
 begin
   Result := False;
   aRotorIndex := -1;
@@ -676,7 +713,7 @@ begin
   end;
 end;
 
-procedure TEnigmaMachine.SetRotor(aRotorIndex : Integer; const Value : TEnigmaRotor);
+procedure TEnigmaMachine.SetRotor(aRotorIndex: Integer; const Value: TEnigmaRotor);
 begin
   fRotorSet[aRotorIndex] := Value;
 end;
