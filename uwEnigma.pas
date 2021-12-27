@@ -18,21 +18,23 @@ const
 
 type
   TEnigmaAlphabet = 0 .. CEnigmaChars;
+  TEnigmaRotorBox = 0 .. CEnigmaMaxRotors;
+
   TEnigmaSignalDirection = (sdIn, sdOut);
 
-  TEnigmaRotorIDs = 0 .. CEnigmaMaxRotors;
-  TEnigmaRotorSlots = 0 .. CEnigmaMaxRotors; // 0 Rotor slot unused
+  TEnigmaRotorIDs = type TEnigmaRotorBox;
+  TEnigmaRotorSlots = type TEnigmaRotorBox; // 0 Rotor slot unused
 
-  TEnigmaRingOffset = TEnigmaAlphabet; // 0 no offset
-  TEnigmaRotorPosition = TEnigmaAlphabet; // 0 Rotor not in start position
-  TEnigmaRotorNotchPosition = TEnigmaAlphabet; // 0 turnover disabled
+  TEnigmaRingOffset = type TEnigmaAlphabet; // 0 no offset
+  TEnigmaRotorPosition = type TEnigmaAlphabet; // 0 Rotor not in start position
+  TEnigmaRotorNotchPosition = type TEnigmaAlphabet; // 0 turnover disabled
   TEnigmaRotorNotchPositions = set of TEnigmaRotorNotchPosition;
 
   TEnigmaKeyBoard = string[CEnigmaChars];
   THumanizedCipherWiringCircuit = string[CHumanizedCipherWiringCircuit];
 
-  TEnigmaInPhysicalKeyBoard = TEnigmaKeyBoard;
-  TEnigmaOutVirtualKeyBoard = TEnigmaKeyBoard;
+  TEnigmaInPhysicalKeyBoard = type TEnigmaKeyBoard;
+  TEnigmaOutVirtualKeyBoard = type TEnigmaKeyBoard;
 
   // simulate interlnal wiring
   TEnigmaCipherWiringCircuit = record
