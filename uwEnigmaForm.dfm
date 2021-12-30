@@ -1156,6 +1156,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     TabStop = False
     OnClick = cmb_Notch_Slot_1Click
     Items.Strings = (
+      'All'
       '01 - A'
       '02 - B'
       '03 - C'
@@ -1193,6 +1194,7 @@ object EnigmaDemoForm: TEnigmaDemoForm
     TabStop = False
     OnClick = cmb_Notch_Slot_2Click
     Items.Strings = (
+      'All'
       '01 - A'
       '02 - B'
       '03 - C'
