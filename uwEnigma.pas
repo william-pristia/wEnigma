@@ -156,12 +156,12 @@ type
     function GetRotor(ARotorIndex : Integer) : TEnigmaRotor;
   protected
     procedure DoEnigmaMachineChipedChar(const AInChar, AOutChar : AnsiChar); virtual;
+    function RotorIndexFromRotorSlot(ASlot : TEnigmaRotorSlots; var ARotorIndex : Integer) : Boolean;
+    function RotorIndexFromRotorID(ARotorID : TEnigmaRotorIDs; var ARotorIndex : Integer) : Boolean;
   public
     constructor Create; virtual;
     destructor Destroy; override;
 
-    function RotorIndexFromRotorSlot(ASlot : TEnigmaRotorSlots; var ARotorIndex : Integer) : Boolean;
-    function RotorIndexFromRotorID(ARotorID : TEnigmaRotorIDs; var ARotorIndex : Integer) : Boolean;
     procedure IncRotorCurrentPosition(const ARotorSlot : TEnigmaRotorSlots);
     procedure DecRotorCurrentPosition(const ARotorSlot : TEnigmaRotorSlots);
 
